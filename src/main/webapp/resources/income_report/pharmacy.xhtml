@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="credit" />
+        <cc:attribute name="wholeSale" />
+        <cc:attribute name="pharmacy" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:dataTable id="#{cc.id}" value="#{cc.attrs.pharmacy}" var="str"
+                     rendered="#{cc.attrs.pharmacy.size()>0}">
+            <f:facet name="header">
+                <h:outputLabel value="Pharmacy Collection"/>
+                <h:outputLabel rendered="#{cc.attrs.credit}" value=" (Credit) "/>
+                <h:outputLabel rendered="#{cc.attrs.wholeSale}" value=" (WholeSale) "/>
+            </f:facet>
+            <p:column style="text-align: left;">
+                <f:facet name="header">
+                    <h:outputLabel value="Department Name"/>
+                </f:facet>
+                <h:outputLabel value="#{str.string}"/>
+            </p:column>
+            <p:column/>
+            <p:column/>
+            <p:column/>
+            <p:column style="text-align: right;">
+                <f:facet name="header">
+                    <h:outputLabel value="Value"/>
+                </f:facet>
+                <h:outputLabel value="#{str.value1}">
+                    <f:convertNumber pattern="#,##0.00"/>
+                </h:outputLabel>
+            </p:column>    
+            <p:columnGroup type="footer">
+                <p:row>
+                    <p:column colspan="5" footerText="Total Pharmacy"/>
+                    <p:column style="text-align: right;" footerText="#{bookKeepingSummery.pharmacyTotal}" rendered="#{!cc.attrs.wholeSale and !cc.attrs.credit}" >
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{bookKeepingSummery.pharmacyTotal}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputLabel>
+                        </f:facet>
+                    </p:column>
+                    <p:column style="text-align: right;" footerText="#{bookKeepingSummery.pharmacyWholeSaleTotal}" rendered="#{cc.attrs.wholeSale and !cc.attrs.credit}" >
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{bookKeepingSummery.pharmacyWholeSaleTotal}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputLabel>
+                        </f:facet>
+                    </p:column>
+                    <p:column style="text-align: right;" footerText="#{bookKeepingSummery.pharmacyTotalCredit}" rendered="#{!cc.attrs.wholeSale and cc.attrs.credit}" >
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{bookKeepingSummery.pharmacyTotalCredit}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputLabel>
+                        </f:facet>
+                    </p:column>
+                    <p:column style="text-align: right;" footerText="#{bookKeepingSummery.pharmacyWholeSaleTotalCredit}" rendered="#{cc.attrs.wholeSale and cc.attrs.credit}" >
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{bookKeepingSummery.pharmacyWholeSaleTotalCredit}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputLabel>
+                        </f:facet>
+                    </p:column>
+                </p:row>
+            </p:columnGroup>
+        </p:dataTable>
+    </cc:implementation>
+</html>

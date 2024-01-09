@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/hr/hr_admin.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+
+
+
+    <ui:define name="subContent">
+
+        <h:panelGroup >
+            <h:form  >
+                <div class="row">
+                    <div class="col-6">
+                        <p:panel header="Staff"  id="staff">
+                            <h:outputLabel value="Select Staff"/>
+                            <p:autoComplete class="w-100 my-1" inputStyleClass="w-100"  forceSelection="true" 
+                                            value="#{staffChangeController.staff}"
+                                            completeMethod="#{staffController.completeStaffCode}"  
+                                            var="mys" itemLabel="#{mys.person.nameWithTitle}" itemValue="#{mys}"
+                                            >   
+                                <f:ajax event="itemSelect" execute="@this" render="lst det" listener="#{staffChangeController.findBasic(commonController.currentDateTime)}" />
+                                <p:column headerText="Name">
+                                    #{mys.person.name}
+                                </p:column>
+                                <p:column headerText="Code">
+                                    #{mys.code}
+                                </p:column>
+                            </p:autoComplete>   
+                        </p:panel>
+
+                        <p:panel>
+
+                            <h:outputLabel value="Active From"/>
+                            <p:calendar class="w-100 my-1" inputStyleClass="w-100" pattern="#{sessionController.applicationPreference.longDateFormat}"
+                                        navigator="true"
+                                        value="#{staffChangeController.fromDate}"/>
+                            <p:commandButton class="my-1 ui-button-secondary" ajax="false" value="Change" action="#{staffChangeController.update}"  />
+
+                        </p:panel>
+                    </div>
+                    <div class="col-6">
+                        <p:panel header="Detail" id="det">
+                            <h:panelGrid columns="3">
+                                <h:outputLabel value="Working Department"/>
+                                <h:outputLabel value="#{staffChangeController.staff.workingDepartment.name}"/>
+                                <p:selectOneMenu class="w-100" value="#{staffChangeController.staff.workingDepartment}">
+                                    <f:selectItem itemLabel="Please select a Department"/>
+                                    <f:selectItems value="#{staffChangeController.institutionDepatrments}" var="cat" itemLabel="#{cat.name}" itemValue="#{cat}" />
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Employee Status"/>
+                                <h:outputLabel value="#{staffChangeController.staff.employeeStatus}"/>
+                                <p:selectOneMenu class="w-100" value="#{staffChangeController.staff.employeeStatus}" >
+                                    <f:selectItem itemLabel="Please select Employee Status"/>
+                                    <f:selectItems value="#{staffController.employeeStatuses}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Staff Category"/>
+                                <h:outputLabel value="#{staffChangeController.staff.staffCategory.name}"/>
+                                <p:selectOneMenu class="w-100" value="#{staffChangeController.staff.staffCategory}">
+                                    <f:selectItem itemLabel="Please Staff Category"/>
+                                    <f:selectItems value="#{staffCategoryController.items}" var="i" itemValue="#{i}" itemLabel="#{i.name}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Staff Grade"/>
+                                <h:outputLabel value="#{staffChangeController.staff.grade.name}"/>
+                                <p:selectOneMenu class="w-100" value="#{staffChangeController.staff.grade}">
+                                    <f:selectItem itemLabel="Please Staff Grade"/>
+                                    <f:selectItems value="#{gradeController.items}" var="i" itemValue="#{i}" itemLabel="#{i.name}"/>
+                                </p:selectOneMenu>
+                                <h:outputLabel value="Staff Designation"/>
+                                <h:outputLabel value="#{staffChangeController.staff.designation.name}"/>
+                                <p:selectOneMenu class="w-100" value="#{staffChangeController.staff.designation}" >
+                                    <f:selectItem itemLabel="Please Staff Designation"/>
+                                    <f:selectItems value="#{designationController.items}" var="ii" itemValue="#{ii}" itemLabel="#{ii.name}"/>
+                                </p:selectOneMenu>   
+                                <h:outputLabel value="Staff Basic"/>
+                                <h:outputLabel class="mx-2" value="#{staffChangeController.staff.basic}"/>
+                            </h:panelGrid>  
+
+                        </p:panel>
+                    </div>
+                    <div class="col-4">
+
+                    </div>
+                </div>
+
+
+                <p:spacer height="30" />
+                <p:panelGrid columns="3" id="lst" style="min-width: 100%;">
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffWorkingDepartments}" var="j1">
+                        <f:facet name="header">
+                            <h:outputLabel value="Worked Department"/>
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j1.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j1.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>                            
+                        </p:column>
+                        <p:column headerText="Department">
+                            <h:outputLabel value="#{j1.department.name}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j1.creater.webUserPerson.name}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffEmployeeStatuss}" var="j2">
+                        <f:facet name="header">
+                            <h:outputLabel value="Employee Status"/>
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j2.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j2.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>  
+                        </p:column>
+                        <p:column headerText="Employee Status">
+                            <h:outputLabel value="#{j2.employeeStatus}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j2.creater.webUserPerson.name}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffStaffCategorys}" var="j3">
+                        <f:facet name="header">
+                            <h:outputLabel value="Category"/>
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j3.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j3.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>  
+                        </p:column>
+                        <p:column headerText="Category">
+                            <h:outputLabel value="#{j3.staffCategory.name}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j3.creater.webUserPerson.name}"/>
+                        </p:column>                        
+                    </p:dataTable>
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffGrades}" var="j4">
+                        <f:facet name="header">
+                            <h:outputLabel  value="Grade" />
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j4.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j4.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>  
+                        </p:column>
+                        <p:column headerText="Grade">
+                            <h:outputLabel value="#{j4.grade.name}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j4.creater.webUserPerson.name}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffDesignations}" var="j5">
+                        <f:facet name="header">
+                            <h:outputLabel value="Designation"/>
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j5.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j5.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>  
+                        </p:column>
+                        <p:column headerText="Designation">
+                            <h:outputLabel value="#{j5.designation.name}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j5.creater.webUserPerson.name}"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dataTable  value="#{staffChangeController.staff.staffEmployment.staffBasics}" var="j6">
+                        <f:facet name="header">
+                            <h:outputLabel value="Basic"/>
+                        </f:facet>
+                        <p:column headerText="From" >
+                            <h:outputLabel  value="#{j6.fromDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>
+                        </p:column>
+                        <p:column headerText="To" >
+                            <h:outputLabel  value="#{j6.toDate}">
+                                <f:convertDateTime pattern="yyyy MMM dd"/>
+                            </h:outputLabel>  
+                        </p:column>
+                        <p:column headerText="Basic">
+                            <h:outputLabel value="#{j6.basic.staffPaySheetComponentValue}"/>
+                        </p:column>
+                        <p:column headerText="Change User">
+                            <h:outputLabel value="#{j6.creater.webUserPerson.name}"/>
+                        </p:column>                        
+                    </p:dataTable>
+
+                </p:panelGrid>
+            </h:form>
+
+        </h:panelGroup>
+
+    </ui:define>
+
+</ui:composition>

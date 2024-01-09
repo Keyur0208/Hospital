@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:bi="http://java.sun.com/jsf/composite/inward/bill">
+
+    <h:body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+                <h:form>
+                    <p:panel header="Payment Reprint">
+                        <div class="row">
+                            <div class="justify-content-center col-md-6">
+                                <p:commandButton ajax="false" value="Cancel" 
+                                                 class="ui-button-danger mx-1"
+                                                 action="inward_cancel_bill_professional"  
+                                                 disabled="#{inwardSearch.bill.cancelled}"  >                           
+                                </p:commandButton>
+                            </div>
+                                
+
+                           
+                            <div class="justify-content-end d-flex col-md-6">
+                                <p:commandButton ajax="false" value="Mark As Checked"
+                                                action="#{inwardSearch.markAsChecked()}"
+                                                class="ui-button-success mx-1"
+                                                icon="fas fa-check"
+                                                 rendered="#{webUserController.hasPrivilege('InwardCheck')}"  />
+                                <p:commandButton ajax="false" value="Mark As Un Check"
+                                                action="#{inwardSearch.markAsUnChecked()}"
+                                                class="ui-button-warning mx-1" 
+                                                icon="fas fa-times"
+                                                 rendered="#{webUserController.hasPrivilege('InwardUnCheck')}"  />
+                                <p:commandButton ajax="false" value="Back To Interim"
+                                                 action="/inward/inward_bill_intrim"
+                                                 class="mx-1 ui-button-info"
+                                                 icon="fas fa-arrow-left"
+                                                actionListener="#{bhtSummeryController.createTables()}"
+                                                  />
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p:panel header="Patient Detail">
+                                    <f:facet name="header">
+                                        <h:outputText styleClass="fa fa-user-circle"></h:outputText>
+                                        <h:outputLabel value="Patient Detail" class="mx-4"></h:outputLabel>
+                                    </f:facet>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Patient ​Name:" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.patient.person.nameWithTitle }" ></h:outputLabel>
+                                        <h:outputLabel value="Bht No:" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.patientEncounter.bhtNo }" ></h:outputLabel>
+                                        <h:outputLabel value="Age" />
+                                        <h:outputLabel value="#{inwardSearch.bill.patient.age}"  />
+                                        <h:outputLabel value="Sex" >
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.patient.person.sex}" >
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Phone" >
+                                        </h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.patient.person.phone}" >
+                                        </h:outputLabel>
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+                            <div class="col-md-6">
+                                <p:panel>
+                                    <f:facet name="header">
+                                        <h:outputText styleClass="fas fa-file-invoice"></h:outputText>
+                                        <h:outputLabel value="Bill Detail" class="mx-4"></h:outputLabel>
+                                    </f:facet>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Bill No :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.insId}" ></h:outputLabel>
+                                        <h:outputLabel value="Payment Type : " ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.paymentMethod}" ></h:outputLabel>
+                                        <h:outputLabel value="Net Total :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.netTotal}" ></h:outputLabel>
+                                        <h:outputLabel value="Bill Type :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.billType}" ></h:outputLabel>
+
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+                        </div>
+                        <p:panel>
+                            <p:panelGrid columns="2" style="width: 100%;">
+                                
+                                
+                            </p:panelGrid>
+
+
+                            <p:dataTable rowIndexVar="rowIndex"
+                                         editable="true"
+                                         value="#{inwardSearch.billFees}" var="bip" >  
+                                <p:ajax event="rowEdit" listener="#{billSearch.onEdit}" />  
+                                <p:ajax event="rowEditCancel" listener="#{billSearch.onEdit}" /> 
+                                <p:column>
+                                    <f:facet name="header">No</f:facet>
+                                    <h:outputLabel value="#{rowIndex+1}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">Item</f:facet>
+                                    <h:outputLabel value="#{bip.billItem.item.name}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">Fee</f:facet>
+                                    <h:outputLabel value="#{bip.feeValue}"/>
+                                </p:column>  
+                                <p:column>
+                                    <f:facet name="header">Fee Name</f:facet>
+                                    <h:outputLabel value="#{bip.fee.name}"/>
+                                </p:column> 
+                                <p:column headerText="Speciality">
+                                    <h:outputLabel value="#{bip.staff.speciality.name}"/>
+                                </p:column> 
+                                <p:column headerText="Payee">
+                                    <p:cellEditor>  
+                                        <f:facet name="output"> 
+                                            <h:outputLabel value="#{bip.staff.person.name}"  ></h:outputLabel>
+                                        </f:facet>  
+                                        <f:facet name="input">  
+                                            <p:autoComplete value="#{bip.staff}" 
+                                                            disabled="#{bip.paidValue!=0 or !webUserController.hasPrivilege('ChangeProfessionalFee')}"
+                                                            completeMethod="#{inwardProfessionalBillController.completeStaff}"
+                                                            var="bifs" itemLabel="#{bifs.person.name}" itemValue="#{bifs}" 
+                                                            forceSelection="true"/>
+                                           
+                                        </f:facet>  
+                                    </p:cellEditor>  
+
+                                </p:column>
+                                <p:column style="width:6%">  
+                                    <p:rowEditor > 
+                                    </p:rowEditor>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </p:panel>
+
+
+                </h:form>
+            </ui:define>
+
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

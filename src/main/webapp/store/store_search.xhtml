@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:se="http://java.sun.com/jsf/composite/store/search">
+
+    <h:body>
+        <ui:composition template="/resources/template/template.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <p:panel id="gpBillPreview">
+                        <f:facet name="header" >
+                            <h:outputLabel value="STORE BILL SEARCH "/>                                 
+                            <h:panelGrid columns="4" >
+                                <h:outputLabel value="From Date"/>
+                                <p:calendar styleClass="dateTimePicker" id="fromDate" value="#{searchController.fromDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >      
+                                </p:calendar>
+                                <h:outputLabel value="To Date"/>
+                                <p:calendar id="toDate" value="#{searchController.toDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >                                                                              
+                                </p:calendar>
+                                <p:selectOneMenu value="#{searchController.billType}">
+                                    <f:selectItem itemLabel="Select Bill Type"/>
+                                    <f:selectItems value="#{enumController.storeBillTypes}" var="i" itemLabel="#{i.label}" itemValue="#{i}" />
+                                    <f:ajax  event="change" execute="@this" render="detail" listener="#{searchController.makeNull}"/>
+                                </p:selectOneMenu>
+                                <p:inputText autocomplete="off" value="#{searchController.maxResult}" />
+                                <p:commandButton id="btnSearch" ajax="false" value="Search Current" action="#{searchController.createTableByBillType}"/>
+                                <p:commandButton ajax="false" value="Search in All Department" action="#{searchController.createTableByBillTypeAllDepartment}" rendered="false"/>                                
+                            </h:panelGrid>
+                            <p:defaultCommand target="btnSearch"/>
+                        </f:facet>
+                        <h:panelGroup id="detail">
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreGrnBill'}" >
+                                <se:grn/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreGrnReturn'}" >
+                                <se:grn_return />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreOrder'}" >
+                                <se:po_request />
+                            </h:panelGroup>
+                            
+                               <h:panelGroup rendered="#{searchController.billType eq 'StoreTransferRequest'}" >
+                                <se:transfer_request />
+                            </h:panelGroup>
+                            
+                               <h:panelGroup rendered="#{searchController.billType eq 'StoreTransferIssue'}" >
+                                <se:transfer_issue />
+                            </h:panelGroup>
+                            
+                            
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreOrderApprove'}" >
+                                <se:po_approve />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StorePre'}" >
+                                <se:pre_bill />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StorePurchase'}" >
+                                <se:purchase />
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{searchController.billType eq 'StorePurchaseReturn'}" >
+                                <se:purchase_return />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreSale'}" >
+                                <se:sale />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{searchController.billType eq 'StoreAdjustment'}" >
+                                <se:adjustment />
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </p:panel>
+
+                </h:form>
+               
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

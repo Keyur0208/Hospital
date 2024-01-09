@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+        <ui:composition template="/credit/index_pharmacy_due_access.xhtml">
+            <ui:define name="subcontent">
+                <h:form>
+                    <p:panel>
+                        <f:facet name="header">
+                            <h:outputLabel value="Pharmacy Credit Due"/>
+                        </f:facet>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="From Date"/>
+                            <p:calendar id="fromDate" value="#{creditCompanyDueController.fromDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                                <f:ajax event="dateSelect" execute="toDate @this"  render="lst"/>
+                            </p:calendar>
+                            <h:outputLabel value="To Date"/>
+                            <p:calendar id="toDate" value="#{creditCompanyDueController.toDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                                <f:ajax event="dateSelect" execute="@this fromDate"  render="lst"/>
+                            </p:calendar>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <p:commandButton ajax="false" value="Process" action="#{creditCompanyDueController.createPharmacyCreditDue}" />
+                            <p:commandButton ajax="false" value="Print" styleClass="noPrintButton" >
+                                <p:printer target="panIx" />
+                            </p:commandButton>
+                            <p:commandButton value="Excel" ajax="false" styleClass="noPrintButton" >
+                                <p:dataExporter type="xlsx" target="lst" fileName="credit_company_pharmacy_due"   />
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:panel id="panIx" styleClass="noBorder summeryBorder" >
+                            <p:dataTable id="lst" value="#{creditCompanyDueController.items}" var="i">
+                                <f:facet name="header">
+                                    <h:outputLabel value="DUE SEARCH"/>
+                                    <h:outputLabel value="&emsp;&emsp;From :  " style="white-space: pre-line"/>
+                                    <h:outputLabel value="#{creditCompanyDueController.fromDate}">
+                                        <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                    </h:outputLabel>
+                                    <h:outputLabel value="&emsp;&emsp;To  :  "/>
+                                    <h:outputLabel value="#{creditCompanyDueController.toDate}">
+                                        <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                    </h:outputLabel>
+                                </f:facet>
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column headerText="Bill No">                                    
+                                        </p:column>
+                                        <p:column headerText="Bill No">                                    
+                                        </p:column>
+                                        <p:column headerText="Bill Date">                                    
+                                        </p:column>
+                                        <p:column headerText="Client Name">                                    
+                                        </p:column>
+                                        <p:column headerText="Billed Amount">                                    
+                                        </p:column>
+                                        <p:column headerText="Staff Fee">                                    
+                                        </p:column>
+                                        <p:column headerText="Paid Amount">                                    
+                                        </p:column>
+                                        <p:column headerText="Net Amount">                                    
+                                        </p:column>
+                                    </p:row>
+                                </p:columnGroup>
+                                <p:subTable value="#{i.bills}" var="b">
+                                    <f:facet name="header">
+                                        <h:outputLabel  value="#{i.institution.name}"/>
+                                    </f:facet>
+                                    <p:column>                              
+                                        <h:outputLabel value="#{b.insId}" />                                
+                                    </p:column>
+                                    <p:column>                              
+                                        <h:outputLabel value="#{b.deptId}" />                                
+                                    </p:column>
+                                    <p:column>                                
+                                        <h:outputLabel value="#{b.createdAt}" >
+                                            <f:convertDateTime pattern="yyyy MM dd" />
+                                        </h:outputLabel>                                 
+                                    </p:column>
+                                    <p:column>                               
+                                        <h:outputLabel value="#{b.patient.person.nameWithTitle}" />                                 
+                                    </p:column>
+                                    <p:column style="text-align: right;">                                
+                                        <h:outputLabel value="#{b.netTotal}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>                                 
+                                    </p:column>
+                                    <p:column style="text-align: right;">                                
+                                        <h:outputLabel value="#{b.staffFee}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>                                 
+                                    </p:column>
+                                    <p:column style="text-align: right;">                              
+                                        <h:outputLabel value="#{b.paidAmount}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;">                              
+                                        <h:outputLabel value="#{b.netTotal+b.paidAmount}" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:columnGroup type="footer">
+                                        <p:row>
+                                            <p:column footerText="Total" colspan="3" />
+                                            <p:column style="text-align: right;">
+                                                <f:facet name="footer">
+                                                    <h:outputLabel value="#{i.total}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputLabel>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column>
+
+                                            </p:column>
+                                            <p:column style="text-align: right;" >
+                                                <f:facet name="footer">
+                                                    <h:outputLabel value="#{i.paidTotal}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputLabel>
+                                                </f:facet>
+                                            </p:column>
+                                            <p:column style="text-align: right;" >
+                                                <f:facet name="footer">
+                                                    <h:outputLabel value="#{i.total+i.paidTotal}">
+                                                        <f:convertNumber pattern="#,##0.00" />
+                                                    </h:outputLabel>
+                                                </f:facet>
+                                            </p:column>
+                                        </p:row>
+                                    </p:columnGroup>
+                                </p:subTable>
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                                </f:facet>
+
+                            </p:dataTable>
+                        </p:panel>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

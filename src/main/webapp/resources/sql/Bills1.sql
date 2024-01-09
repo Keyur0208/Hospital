@@ -1,0 +1,4 @@
+select id,`TOTAL`, `PAYMENTMETHOD`, `BILLTYPE`, `BILLDATE`, `BILLTIME`, `BACKWARDREFERENCEBILL_ID` , `NETTOTAL`,`VAT`,`VATPLUSNETTOTAL`
+from bill
+where id=5090083
+ order by id desc limit 40;

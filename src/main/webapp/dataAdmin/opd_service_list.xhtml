@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/dataAdmin/report_entered_data.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                >
+
+
+    <ui:define name="subcontent">
+
+        <h:panelGroup >
+            <h:form id="form"  >
+                <p:growl />
+                <p:panel id="panIx"  >
+
+                    <f:facet name="header" >
+                        <h:outputLabel value="List of Service"></h:outputLabel>
+                        <p:commandButton ajax="false" value="Print" styleClass="noPrintButton" >
+                            <p:printer target="panIx" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Excel" ajax="false" >
+                            <p:dataExporter type="xlsx" target="tblBills" fileName="Service Fees"
+                                         />
+                        </p:commandButton>
+
+                    </f:facet>
+
+                    <h:inputText autocomplete="off" id="txtSearch" value="#{serviceController.selectText}" style="width: 600px;" >
+                        <f:ajax render="tblBills" execute="txtSearch" event="keyup" />
+                    </h:inputText>
+
+                    <p:panel >
+
+                        <p:dataTable id="tblBills" value="#{serviceController.serviceFee}" var="ix"  style="font-size: 12px;">
+                            <f:facet name="header">
+                                <h:outputLabel value="Service - Price List" style="font-family: serif;" ></h:outputLabel>
+                            </f:facet>
+                            <p:columnGroup type="header">  
+                                <p:row>                                        
+                                    <p:column headerText="Fee Type" style="font-weight:normal ;color: black;text-align: left;" /> 
+                                    <p:column headerText="Staff" style="font-weight:normal ;color: black;text-align: left;" />
+                                    <p:column headerText="Fee Value" style="font-weight:normal ;color: black;text-align: left;"/>                                          
+                                </p:row>                                      
+                            </p:columnGroup>
+
+                            <p:subTable id="tbl" value="#{ix.itemFees}" var="d">
+                                <f:facet name="header">
+                                    <p:outputLabel value="#{ix.service.category.parentCategory.name}" style="font-weight:normal ;color: black;text-align: left;" /> 
+                                    <p:outputLabel value="#{ix.service.category.name}" style="font-weight:normal ;color: black;text-align: left;" />
+                                    <p:outputLabel value="#{ix.service.name}" style="font-weight:normal ;color: black;text-align: left;"/> 
+                                </f:facet>
+
+                                <p:column  style="width: 25%;" >                                    
+                                    <h:outputLabel value="#{d.feeType.label}"/>
+                                </p:column>
+
+
+                                <p:column style="width: 25%;">
+                                    <h:outputLabel value="#{d.staff.person.name}" ></h:outputLabel>
+                                </p:column>
+
+                                <p:column  style="width: 50%;text-align: right;" >
+                                    <h:outputLabel value="#{d.fee}" >
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:summaryRow >
+                                    <p:column colspan="2">                                        
+                                    </p:column>
+                                    <p:column style="text-align: right;">
+                                        #{ix.service.total}
+                                    </p:column>
+                                </p:summaryRow>
+
+                            </p:subTable>
+
+
+                        </p:dataTable>
+                    </p:panel>
+
+                </p:panel>
+            </h:form>
+
+        </h:panelGroup>
+
+        <h:form>
+
+
+
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

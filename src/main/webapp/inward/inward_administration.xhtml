@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+
+                <div class="row">
+                    <div class="col-3">
+                        <h:form>  
+                            <p:panel header="Manage Inpatient Services" rendered="true" >
+                                <p:accordionPanel activeIndex="#{investigationCategoryController.manageItemIndex}">
+                                    <p:ajax process="@this" ></p:ajax>
+
+                                    <p:tab title="Admission Types">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton ajax="false" value="Admission Types" class="w-100" action="inward_admission_type"  ></p:commandButton>
+                                        </div>
+                                    </p:tab>
+
+
+
+                                    <p:tab title="Rooms">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton ajax="false" value="Facility Categories" class="w-100" action="inward_room_category"  ></p:commandButton>
+                                            <p:commandButton ajax="false" value="Rooms" class="w-100" action="inward_room"  ></p:commandButton>
+                                            <p:commandButton ajax="false" value="Room Fees" class="w-100" action="inward_room_facility"  ></p:commandButton>
+                                        </div>
+                                    </p:tab>
+
+                                    <p:tab title="Services">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton value="Time-based Service Categories" class="w-100" action="inward_timed_item_category"   style="alignment-adjust: auto"></p:commandButton>
+                                            <p:commandButton value="Time-based Services" class="w-100" action="inward_timed_item"  actionListener="#{timedItemController.prepareAdd()}" ></p:commandButton>
+
+                                            <p:commandButton value="Time-based Services Charges" class="w-100" action="inward_timed_item_fee"  ></p:commandButton>
+                                            <p:commandButton value="Surgeries" class="w-100" action="/clinical/clinical_procedures"  ></p:commandButton>
+                                        </div>
+                                    </p:tab>
+
+                                    <p:tab title="Price Matrix">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton ajax="false" value="Inward Price Adjustment - Service " class="w-100" action="/inward/inward_price_adjustment_service" actionListener="#{inwardPriceAdjustmntController.preparedAdd()}"></p:commandButton>
+                                            <p:commandButton ajax="false" value="Inward Price Adjustment - Investigation " class="w-100" action="/inward/inward_price_adjustment_investigation" actionListener="#{inwardPriceAdjustmntController.preparedAdd()}"></p:commandButton>
+                                            <p:commandButton ajax="false" value="Inward Price Adjustment - Pharmacy " class="w-100" action="/inward/inward_price_adjustment_pharmacy" actionListener="#{inwardPriceAdjustmntController.preparedAdd()}"></p:commandButton>
+                                            <p:commandButton ajax="false" value="Inward Price Adjustment - Store " class="w-100" action="/inward/inward_price_adjustment_store" actionListener="#{inwardPriceAdjustmntController.preparedAdd()}"></p:commandButton>
+                                        </div>
+                                    </p:tab>
+
+                                    <p:tab title="Analytics">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton ajax="false" value="Inward Prices" class="w-100" action="/inward/inward_fee_list" ></p:commandButton>
+                                        </div>
+                                    </p:tab>
+                                    <p:tab title="Diagnosis Cards">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton 
+                                                ajax="false" 
+                                                value="Add Diagnosis Card Template"
+                                                class="w-100" 
+                                                action="#{uploadController.toAddNewDiagnosisCardTemplateUpload()}" >
+                                            </p:commandButton> 
+                                            <p:commandButton 
+                                                ajax="false" 
+                                                value="Uploaded Diagnosis Card Templates"
+                                                class="w-100" 
+                                                action="#{uploadController.toListDiagnosisCardUploads()}" >
+                                             </p:commandButton>
+                                            
+                                        </div>
+                                    </p:tab>
+
+                                    <p:tab title="Troubleshooting">
+                                        <div class="d-grid gap-2">
+                                            <p:commandButton value="Errors in Admissions" class="w-100" ajax="false" action="inward_admission_edit" ></p:commandButton>
+                                        </div>
+                                    </p:tab>
+
+                                </p:accordionPanel>
+                            </p:panel>
+                        </h:form>
+                    </div>
+
+                    <div class="col-9">
+                        <ui:insert name="subcontent">
+
+                        </ui:insert>
+                    </div>
+
+                </div>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </h:body>
+</html>

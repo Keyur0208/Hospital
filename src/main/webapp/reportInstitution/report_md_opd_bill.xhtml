@@ -1,0 +1,165 @@
+ <?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/resources/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                
+                >
+
+    <ui:define name="content">
+        <h:outputStylesheet library="css" name="printing.css"></h:outputStylesheet>
+        <h:form>
+            <p:panel id="gpBillPreview">
+                <f:facet name="header">
+                    <h:outputLabel value="6) Managing Director"/>
+                </f:facet>
+
+                <h:panelGrid columns="2" styleClass="noPrintButton">                    
+                    <h:outputLabel value="From Date"/>
+                    <p:calendar id="fromDate" value="#{mdReportController.fromDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                        <f:ajax event="dateSelect"  listener="#{mdReportController.makeBillNull}"/>
+                    </p:calendar>
+
+                    <h:outputLabel value="To Date"/>
+                    <p:calendar id="toDate" value="#{mdReportController.toDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                        <f:ajax event="dateSelect"   listener="#{mdReportController.makeBillNull}"/>
+                    </p:calendar>
+
+                </h:panelGrid>   
+                <h:panelGrid columns="5" styleClass="noPrintButton">
+                    <p:spacer width="60" height="1"/>
+                    <p:commandButton id="btnRefresh" ajax="false" value="Refresh" style="float: right;"/>
+                    <p:defaultCommand target="btnRefresh"/>
+                    <p:commandButton value="Print" ajax="false" >
+                        <p:printer target="gpBillPreview" ></p:printer>
+                    </p:commandButton>
+                    <p:commandButton value="Excel" ajax="false" styleClass="noPrintButton" style="float:right;">
+                        <p:dataExporter type="xlsx" target="tbl" fileName="Report_by_Bill_OPD_From_#{mdReportController.fromDate} To #{mdReportController.toDate}"
+                                       
+                                            
+                                       />
+                    </p:commandButton>
+
+
+                </h:panelGrid>
+
+
+
+                <p:dataTable id="tbl" value="#{mdReportController.bills}"  
+                             rowIndexVar="i" var="bill" 
+                             filteredValue="#{mdReportController.fillterBill}" 
+                             paginator="false"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,20">
+
+
+
+                    <f:facet name="header">
+                        <h:outputLabel value="REPORT BY BILL(OPD)"/>
+                        <h:outputLabel value=" From : " style="white-space: pre-line"/>
+                        <h:outputLabel  value="#{mdReportController.fromDate}">
+                            <f:convertDateTime pattern="dd MMM yyyy hh:mm:ss a"/>
+                        </h:outputLabel>
+                        <h:outputLabel value="&emsp;&emsp;To :"/>
+                        <h:outputLabel  value="#{mdReportController.toDate}" >
+                            <f:convertDateTime pattern="dd MMM yyyy hh:mm:ss a"/>
+                        </h:outputLabel>
+
+                    </f:facet>
+
+                    <p:column headerText="Serial No">
+                        <h:outputLabel value="#{i+1}"/>
+                    </p:column>
+
+                    <p:column filterStyleClass="noPrintButton"  headerText="Institution" filterBy="#{bill.toInstitution.name}" filterMatchMode="contains">
+                        <h:outputLabel value="#{bill.toInstitution.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Department" filterBy="#{bill.toDepartment.name}" filterMatchMode="contains">
+                        <h:outputLabel value="#{bill.toDepartment.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Payment Method" filterBy="#{bill.paymentMethod}" filterMatchMode="contains">
+                        <h:outputLabel value="#{bill.paymentMethod}"/>
+                    </p:column>
+
+                    <p:column headerText="Cancelled/Refunded" filterBy="#{bill.class}" filterMatchMode="contains" >                        
+                        <p:outputLabel value="Refunded" rendered="#{bill.class eq 'class com.divudi.entity.RefundBill'}"/>
+                        <p:outputLabel value="Cancelled" rendered="#{bill.class eq 'class com.divudi.entity.CancelledBill'}"/>
+                    </p:column>
+
+                    <p:column headerText="Bill No" filterBy="#{bill.insId}" filterMatchMode="contains" >                        
+                        <h:outputLabel value="#{bill.insId}"/>
+                    </p:column>
+
+                    <p:column headerText="Name" filterBy="#{bill.patient.person.name}" filterMatchMode="contains">
+                        <h:outputLabel value="#{bill.patient.person.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Hospital Fee" style="text-align:right;">
+                        <h:outputLabel value="#{bill.hospitalFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+                    <p:column headerText="Professional Fee" style="text-align:right;">
+                        <h:outputLabel value="#{bill.professionalFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+                    <p:column headerText="Total" style="text-align:right;">
+                        <h:outputLabel value="#{bill.netTotal}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+
+                    <p:columnGroup  type="footer">
+                        <p:row id="foo">
+                            <p:column colspan="7" footerText="Total">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="Total"/>
+                                </f:facet>
+                            </p:column>
+
+                            <p:column footerText="#{mdReportController.hospitalTotal}">
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{mdReportController.hospitalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+
+                            <p:column footerText="#{mdReportController.professionalTotal}">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{mdReportController.professionalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+
+                            <p:column footerText="#{mdReportController.professionalTotal+mdReportController.hospitalTotal}">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{mdReportController.professionalTotal+mdReportController.hospitalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                        </p:row>
+                    </p:columnGroup>
+                <f:facet name="footer" >
+                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                </f:facet>
+                </p:dataTable>
+
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+
+
+
+</ui:composition>

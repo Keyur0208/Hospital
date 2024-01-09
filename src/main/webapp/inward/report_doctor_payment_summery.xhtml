@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:bi="http://java.sun.com/jsf/composite/bill"
+      >
+
+    <h:body>
+
+        <ui:composition template="/inward/inward_reports.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+                    <p:panel header="Doctor Payment" >
+
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="From" />
+                            <p:calendar class="mx-4 w-100" inputStyleClass="w-100" id="fdate" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  value="#{inwardStaffPaymentBillController.fromDate}"></p:calendar>
+                            <p:outputLabel value="To" />
+                            <p:calendar class="mx-4 w-100" inputStyleClass="w-100" id="tdate" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  value="#{inwardStaffPaymentBillController.toDate}"></p:calendar>
+                            <h:outputLabel  value="Speciality" ></h:outputLabel>
+                            <p:autoComplete class="mx-4 w-100" inputStyleClass="w-100" forceSelection="true" value="#{inwardStaffPaymentBillController.speciality}" id="acSpeciality"
+                                            completeMethod="#{specialityController.completeSpeciality}" var="mysp" itemLabel="#{mysp.name}" itemValue="#{mysp}"
+                                            >
+                            </p:autoComplete>
+                            <h:outputLabel value="Admission Type  " ></h:outputLabel>
+                            <p:selectOneMenu class="w-100 mx-4" id="lstAdmissionType"   
+                                             value="#{inwardStaffPaymentBillController.admissionType}" >
+                                <f:selectItem itemLabel="All Admission Types"/>
+                                <f:selectItems  value="#{admissionTypeController.items}" var="myItem" itemValue="#{myItem}" itemLabel="#{myItem.name}"></f:selectItems>
+                            </p:selectOneMenu>
+                            <h:outputLabel value="BHT Type  " ></h:outputLabel>
+                            <p:selectOneMenu  class="w-100 mx-4" id="cmbBhtType" value="#{inwardStaffPaymentBillController.paymentMethod}"  >
+                                <f:selectItem itemLabel="All BHT Types" />                           
+                                <f:selectItems value="#{enumController.paymentMethodForAdmission}" />
+                            </p:selectOneMenu>
+                            <h:outputLabel value="Credit Company  " ></h:outputLabel>
+                            <p:selectOneMenu class="w-100 mx-4" id="lstCc"   value="#{inwardStaffPaymentBillController.institution}" >
+                                <f:selectItem itemLabel="All Credit Companies"/>
+                                <f:selectItems  value="#{creditCompanyController.creditCompanies}" var="cc" 
+                                                itemValue="#{ccc}" itemLabel="#{ccc.name}"></f:selectItems>
+                            </p:selectOneMenu>   
+                        </h:panelGrid>
+                        <p:watermark for="fdate" value="From Date" />
+                        <p:watermark for="tdate" value="To Date" />
+                        <p:watermark for="acSpeciality" value="Speciality" />
+
+
+                        <h:panelGrid columns="4" class="my-4">
+                            <p:commandButton class="ui-button-warning" icon="fas fa-fill" ajax="false" value="Fill Paid Date" action="#{inwardStaffPaymentBillController.fillDocPayingBillFeeSummeryCreatedDate()}"   ></p:commandButton>
+                            <p:commandButton class="ui-button-warning" icon="fas fa-fill" ajax="false" value="Fill Discharge Date" action="#{inwardStaffPaymentBillController.fillDocPayingBillFeeSummeryDischargeDate()}"   ></p:commandButton>
+                            <p:commandButton class="ui-button-info" icon="fas fa-print" value="Print" ajax="false" action="#"  >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+
+                            <p:commandButton class="ui-button-success" icon="fas fa-file-excel" ajax="false" value="Excel"  >
+                                <p:dataExporter type="xlsx" target="tb" fileName="Doctor_Payment"  />
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:panel id="gpBillPreview">
+                            <p:panelGrid columns="3" style="width: 100%;">
+                                <p:dataTable id="tb" value="#{inwardStaffPaymentBillController.list1}" var="bf" >
+
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Payments For :  #{inwardStaffPaymentBillController.speciality}"/>
+                                    </f:facet>
+
+                                    <p:column headerText="Code">
+                                        <f:facet name="header">
+                                            <p:outputLabel value="Code" />
+                                        </f:facet>
+                                        <p:outputLabel value="#{bf.string2}" >
+                                        </p:outputLabel>
+                                    </p:column>
+
+                                    <p:column headerText="Name">
+                                        <f:facet name="header">
+                                            <p:outputLabel value="Name" />
+                                        </f:facet>
+                                        <p:outputLabel value="#{bf.string1}" >
+                                        </p:outputLabel>
+                                    </p:column>
+
+                                    <p:column headerText="Paid Amount" styleClass="averageNumericColumn">
+                                        <f:facet name="header">
+                                            <p:outputLabel value="Paid Amount" />
+                                        </f:facet>
+                                        <p:outputLabel value="#{bf.value}" >
+                                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panelGrid>
+                        </p:panel>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

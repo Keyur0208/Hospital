@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:bi="http://java.sun.com/jsf/composite/inward/bill"
+      >
+
+    <h:body>
+
+        <ui:composition template="/inward/inward_reports.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+                    <p:panel header="BHT Inward Charge Category Report" styleClass="alignTop" >
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="From Date"/>
+                            <p:calendar class="w-100 mx-4" inputStyleClass="w-100" id="fromDate" value="#{bhtSummeryFinalizedController.fromDate}"  pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                            </p:calendar>
+                            <h:outputLabel value="To Date"/>
+                            <p:calendar class="w-100 mx-4" inputStyleClass="w-100" id="toDate" value="#{bhtSummeryFinalizedController.toDate}"  pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                            </p:calendar>
+                            <h:outputText value="Inward Charge Category" ></h:outputText>
+                            <p:selectOneMenu class="w-100 mx-4" id="cmbInward" value="#{bhtSummeryFinalizedController.inwardChargeType}" >
+                                <f:selectItem itemLabel="Please select Charge"/>
+                                <f:selectItems value="#{enumController.inwardChargeTypesForSetting}" var="i" itemLabel="#{i.label}" itemValue="#{i}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="3" class="my-2">
+                            <p:commandButton value="Search" icon="fas fa-search" ajax="false" action="#{bhtSummeryFinalizedController.createBhtInwardChargeTypeTable()}" />
+                            <p:commandButton value="Print" class="ui-button-info" icon="fas fa-print" ajax="false" action="#" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+
+                            <p:commandButton class="ui-button-warning" icon="fas fa-file-excel" ajax="false" value="Excel"  style="float: right;"   >
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Inward_report"  ></p:dataExporter>
+                            </p:commandButton>  
+                        </h:panelGrid>
+
+
+                    </p:panel>
+
+                    <p:panel id="gpBillPreview">
+                        <p:dataTable value="#{bhtSummeryFinalizedController.billItemsInward}" var="bip" id="tbl"
+                                     >
+                            <f:facet name="header">
+                                <h:outputLabel value="Bill Items"/>
+                            </f:facet>
+                            <p:column headerText="BHT No">
+                                <f:facet name="header">
+                                    <h:outputLabel value="BHT No"/> 
+                                </f:facet>
+                                <h:outputLabel   value="#{bip.bill.patientEncounter.bhtNo}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Invoice No">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Invoice No"/> 
+                                </f:facet>
+                                <h:outputLabel   value="#{bip.bill.insId}"/>
+                            </p:column>
+
+                            <p:column headerText="Discharge Date">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Discharge Date"/> 
+                                </f:facet>
+                                <h:outputLabel   value="#{bip.bill.patientEncounter.dateOfDischarge}">
+                                    <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}" ></f:convertDateTime>
+                                </h:outputLabel>
+                            </p:column>
+
+                            <p:column headerText="Inward Charge Type">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Inward Charge Type"/> 
+                                </f:facet>
+                                <h:outputLabel   value="#{bip.inwardChargeType.label}"/>
+                            </p:column>
+                            <p:column headerText="Total Value" styleClass="averageNumericColumn">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Total Value"/> 
+                                </f:facet>
+                                <h:outputLabel  value="#{bip.grossValue}">
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputLabel>
+                            </p:column>                            
+                            <p:column headerText="Discount Value"  styleClass="averageNumericColumn">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Discount Value"/> 
+                                </f:facet>
+                                <h:outputLabel  value="#{bip.discount}">
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputLabel>
+                            </p:column>
+
+                            <p:column headerText="Net Value"  styleClass="averageNumericColumn">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Net Value"/> 
+                                </f:facet>
+                                <h:outputLabel  value="#{bip.netValue}">
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputLabel>
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+
+                </h:form>
+            </ui:define>
+
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

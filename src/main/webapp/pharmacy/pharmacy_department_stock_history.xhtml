@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <h:body>
+
+        <ui:composition template="/pharmacy/pharmacy_reports_index.xhtml">
+
+            <ui:define name="subcontent">
+
+                <f:view>
+
+                    <h:form>
+
+                        <h:panelGrid columns="1" styleClass="alignTop" >
+                            <h:panelGrid columns="2" >
+                                <p:outputLabel value="From Date" ></p:outputLabel>
+                                <p:calendar id="calFromDate" value="#{stockHistoryController.fromDate}" pattern="#{sessionController.applicationPreference.longDateFormat}" >
+                                    <!--<f:ajax event="dateSelect" execute="calFromDate calToDate" render="tblDates" listener="#{stockHistoryController.fillHistoryAvailableDays}" ></f:ajax>-->
+                                </p:calendar>
+
+                                <p:outputLabel value="To Date" ></p:outputLabel>
+                                <p:calendar id="calToDate" value="#{stockHistoryController.toDate}"  pattern="#{sessionController.applicationPreference.longDateFormat}" >
+                                    <!--<f:ajax event="dateSelect" execute="calFromDate calToDate" render="tblDates" listener="#{stockHistoryController.fillHistoryAvailableDays}" ></f:ajax>-->
+                                </p:calendar>
+
+                                <p:outputLabel value="Department" ></p:outputLabel>
+                                <p:autoComplete completeMethod="#{departmentController.completeDept}"
+                                                var="d" itemLabel="#{d.name}"
+                                                itemValue="#{d}"
+                                                value="#{stockHistoryController.department}"
+                                                  >
+                                    <f:ajax event="itemSelect" execute="@this" render=":#{p:resolveFirstComponentWithId('tblHistories',view).clientId}" ></f:ajax>
+                                </p:autoComplete>
+
+                                <p:commandButton ajax="false" 
+                                                 action="#{stockHistoryController.fillHistoryAvailableDays()}" 
+                                                 value="Display Available Days"  ></p:commandButton>
+                                <p:commandButton ajax="false" 
+                                                 action="#{stockHistoryController.recordHistory()}" 
+                                                 value="Record History Now"  ></p:commandButton>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" >
+
+                                <p:dataTable id="tblDates" rowIndexVar="i"
+                                             value="#{stockHistoryController.pharmacyStockHistoryDays}" 
+                                             var="d" selection="#{stockHistoryController.historyDate}" 
+                                             rowKey="#{d}" selectionMode="single" 
+                                             paginator="true" paginatorAlwaysVisible="false"
+                                             rows="5"
+                                             class="w-100"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             >
+                                    <p:column headerText="History Availabe Days" >
+                                        <p:outputLabel value="#{d}" >
+                                            <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a " ></f:convertDateTime>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+
+                                <p:selectOneMenu value="#{stockHistoryController.departmentType}" class="w-100" style="min-width: 300px">
+                                    <f:selectItem itemLabel="Select Type" />
+                                    <f:selectItems value="#{enumController.departmentType}" var="i" itemLabel="#{i.label}" itemValue="#{i}"  />
+                                </p:selectOneMenu>
+
+                                <p:commandButton id="btnHx" ajax="false" action="#{stockHistoryController.fillStockHistoriesWithZero()}" 
+                                                 value="Display History" process="@this :#{p:resolveFirstComponentWithId('tblDates',view).clientId}" update=":#{p:resolveFirstComponentWithId('tblHistories',view).clientId}" ></p:commandButton>
+                                                 
+                                <p:commandButton id="btnHx2" ajax="false" action="#{stockHistoryController.fillStockHistoriesWithOutZero()}" class="w-100"
+                                                 value="Display History(Stock With Out Zero)" process="@this :#{p:resolveFirstComponentWithId('tblDates',view).clientId}" update=":#{p:resolveFirstComponentWithId('tblHistories',view).clientId}" ></p:commandButton>
+
+
+
+
+
+
+                            </h:panelGrid>
+
+
+
+
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" >
+                            <p:commandButton ajax="false" value="Print"  styleClass="noPrintButton" style="float: right;" >
+                                <p:printer target="panelPrint" />
+                            </p:commandButton>
+                            <p:commandButton ajax="false" value="Excel" action="#" >
+                                <p:dataExporter type="xlsx" target="tblHistories" fileName="Pharmacy_Stock_Report"   />
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:panel id="panelPrint" styleClass="noBorder summeryBorder">
+                            <p:dataTable id="tblHistories" value="#{stockHistoryController.pharmacyStockHistories}"
+                                         rowKey="#{item.id}"
+                                         rowIndexVar="ii"
+                                         var="item">
+                                <f:facet name="header" >
+                                    <p:outputLabel value="#{stockHistoryController.department.name}" rendered="#{stockHistoryController.department ne null}" />
+                                    <p:outputLabel value="All Departents Stock" rendered="#{stockHistoryController.department eq null}" /><br></br>
+                                    <p:outputLabel value="#{stockHistoryController.historyDate}" >
+                                        <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                    </p:outputLabel>
+                                </f:facet>
+                                <p:column style="width: 40px;" >
+                                    <f:facet name="header" >
+                                        No
+                                    </f:facet>
+                                    <p:outputLabel value="#{ii + 1}" ></p:outputLabel>
+                                </p:column>
+                                <p:column rendered="#{stockHistoryController.department eq null}" 
+                                          sortBy="department.name"
+                                          >
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Department"/>
+                                    </f:facet>
+
+                                    <p:outputLabel value="#{item.department.name}"/>
+
+                                </p:column>
+                                <p:column sortBy="item.name">
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Item"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{item.item.name}"/>
+                                </p:column>
+                                <p:column style="text-align: right;" styleClass="averageNumericColumn" >
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Stock"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{item.stockQty}"/>
+                                </p:column>
+                                <p:column style="text-align: right;" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Purchase Value"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{item.stockPurchaseValue}" rendered="#{item.stockPurchaseValue ne 0.0}">
+                                        <f:convertNumber pattern="#,###,##0.00" />
+                                    </p:outputLabel>
+                                    <p:outputLabel value="Not Recorded." rendered="#{item.stockPurchaseValue eq 0.0}"/>
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="#{stockHistoryController.totalStockPurchaseValue}">
+                                            <f:convertNumber pattern="#,###,##0.00" />
+                                        </p:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column style="text-align: right;" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Retail Sale Value"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{item.stockSaleValue}" rendered="#{item.stockSaleValue ne 0.0}">
+                                        <f:convertNumber pattern="#,###,##0.00" />
+                                    </p:outputLabel>
+                                    <p:outputLabel value="Not Recorded." rendered="#{item.stockSaleValue eq 0.0}"/>
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="#{stockHistoryController.totalStockSaleValue}">
+                                            <f:convertNumber pattern="#,###,##0.00" />
+                                        </p:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </h:form>
+
+
+
+                </f:view>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

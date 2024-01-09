@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/reportLab/lab_summeries_index.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                
+                xmlns:cre="http://java.sun.com/jsf/composite/cashier">
+
+
+    <ui:define name="subcontent">
+        <h:outputStylesheet library="css" name="printing.css"></h:outputStylesheet>
+        <h:form>
+
+            <p:panel >
+                <f:facet name="header"  >
+                    <p:outputLabel value="Collecting Centre Collection Detail Report" styleClass="noPrintButton"/>
+                </f:facet>
+                <h:panelGrid columns="2" styleClass="noPrintButton">
+                    <h:outputLabel value="From"/>
+                    <p:calendar id="frmDate" value="#{commonReport.fromDate}" styleClass="dateTimePicker" navigator="true"  pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                    </p:calendar>
+
+                    <h:outputLabel value="To"/>
+                    <p:calendar id="toDate" value="#{commonReport.toDate}" styleClass="dateTimePicker" navigator="true" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                    </p:calendar>
+                    <h:outputLabel value="Collecting Center"/>
+                    <p:autoComplete forceSelection="true" 
+                                    value="#{commonReport.collectingIns}" 
+                                    completeMethod="#{institutionController.completeCollectingCenter}" var="ix" itemLabel="#{ix.name}" itemValue="#{ix}" size="30"  style="width: 400px;">
+                        <p:column>
+                            #{ix.name}
+                        </p:column>
+                        <p:column>
+                            #{ix.institutionCode}
+                        </p:column>
+                    </p:autoComplete>
+                    <h:outputLabel value="Invoice No"/>
+                    <p:inputText value="#{commonReport.invoceNo}" autocomplete="off" />
+                </h:panelGrid> 
+                <h:panelGrid columns="4" styleClass="noPrintButton">
+                    <p:spacer width="40"/>
+                    <p:commandButton value="Process" ajax="false"  styleClass="noPrintButton " style="float: right;" action="#{commonReport.createCollectingCenterBillTable}" />
+
+                    <p:commandButton ajax="false" value="Print"  styleClass="noPrintButton" style="float: right;" >
+                        <p:printer target="panelPrint" />
+                    </p:commandButton>
+                    <p:commandButton ajax="false" value="Excel" action="#" actionListener="#{commonReport.createCollectingCenterBillTable}" >
+                        <p:dataExporter type="xlsx" target="tbl" fileName="Collecting_Centre_Collection_Detail_Report"   />
+                    </p:commandButton> 
+                </h:panelGrid>
+
+            </p:panel>
+            <p:panel id="panelPrint" styleClass="noBorder summeryBorder">
+                <p:dataTable id="tbl" value="#{commonReport.bills}" var="d" rowIndexVar="i">
+                    <f:facet name="header">
+                        <h:outputLabel value="Collecting Centre Collection Detail Report"/> 
+                        <br></br>
+                        <h:panelGrid rendered="#{commonReport.collectingIns ne null}">
+                            <h:outputLabel value="#{commonReport.collectingIns.name}"/>
+                        </h:panelGrid>
+                        <h:outputLabel value="From  "/>                     
+                        <h:outputLabel value="#{commonReport.fromDate}" >
+                            <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a" />
+                        </h:outputLabel>
+                        <h:outputLabel value="- To "/>                       
+                        <h:outputLabel value="#{commonReport.toDate}" >
+                            <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a" />
+                        </h:outputLabel>
+
+                    </f:facet>
+                    <p:column headerText="No">
+                        <f:facet name="header">
+                            <h:outputLabel value="No"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{i+1}"/>
+                    </p:column>
+                    <p:column headerText="Bill No">
+                        <f:facet name="header">
+                            <h:outputLabel value="Bill No"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.insId}"/>
+                    </p:column>
+                    <p:column headerText="Ref. No">
+                        <f:facet name="header">
+                            <h:outputLabel value="Ref. No"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.referenceNumber}"/>
+                    </p:column>
+                    <p:column headerText="Patient Name">
+                        <f:facet name="header">
+                            <h:outputLabel value="Patient Name"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.patient.person.nameWithTitle}"/>
+                    </p:column>
+                    <p:column headerText="Col. Center Name" rendered="#{commonReport.collectingIns eq null}">
+                        <f:facet name="header">
+                            <h:outputLabel value="Col. Center Name"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.collectingCentre.name}" rendered="#{d.collectingCentre ne null}"/>
+                        <h:outputLabel value="#{d.fromInstitution.name}" rendered="#{d.collectingCentre eq null}"/>
+                    </p:column>
+                    <p:column headerText="Reference Bill" >
+                        <f:facet name="header">
+                            <h:outputLabel value="Reference Bill"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.cancelledBill.insId}" rendered="#{d.cancelledBill ne null}"/>
+                        <h:outputLabel value="#{d.referenceBill.insId}" rendered="#{d.referenceBill ne null}"/>
+                    </p:column>                   
+                    <p:column headerText="CC Total" styleClass="averageNumericColumn">
+                        <f:facet name="header">
+                            <h:outputLabel value="CC Total"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.transTotalCCFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+                    <p:column headerText="Hos Total" styleClass="averageNumericColumn">
+                        <f:facet name="header">
+                            <h:outputLabel value="Hos Total"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.transTotalWithOutCCFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="Vat Total" styleClass="averageNumericColumn">
+                        <f:facet name="header">
+                            <h:outputLabel value="Vat Total"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.vat}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+                    <p:column headerText="Total" styleClass="averageNumericColumn">
+                        <f:facet name="header">
+                            <h:outputLabel value="Total"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.netTotal}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="Vat Plus Total" styleClass="averageNumericColumn">
+                        <f:facet name="header">
+                            <h:outputLabel value="Vat Plus Total"/>                        
+                        </f:facet>
+                        <h:outputLabel value="#{d.netTotal+d.vat}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+
+                    <p:columnGroup type="footer">  
+                        <p:row>                              
+                            <p:column footerText="Total" colspan="6" rendered="#{commonReport.collectingIns eq null}"/>
+                            <p:column footerText="Total" colspan="5" rendered="#{commonReport.collectingIns ne null}"/>
+                            <p:column footerText="#{commonReport.totalCC}" style=" text-align: right;">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{commonReport.totalCC}" style=" text-align: right;">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column> 
+                            <p:column footerText="#{commonReport.totalHos}" style=" text-align: right;">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{commonReport.totalHos}" style=" text-align: right;">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{commonReport.totalVat}" style=" text-align: right;">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{commonReport.totalVat}" style=" text-align: right;">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{commonReport.total}" style=" text-align: right;">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{commonReport.total}" style=" text-align: right;">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{commonReport.total+commonReport.totalVat}" style=" text-align: right;">
+                                <f:facet name="footer">
+                                    <h:outputLabel value="#{commonReport.total+commonReport.totalVat}" style=" text-align: right;">
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                        </p:row>  
+                    </p:columnGroup>  
+                </p:dataTable>
+
+            </p:panel>   
+            <p:panel rendered="#{commonReport.collectingIns ne null}">
+                <p:commandButton value="Print" ajax="false" action="#">
+                    <p:printer target="gpBillPreviewPaysheet" ></p:printer>
+                </p:commandButton>
+                <p:panel   id="gpBillPreviewPaysheet"  styleClass="noBorder summeryBorder">
+                    <cre:cc_letter bills="#{commonReport.bills}" con="#{commonReport}"/>
+                </p:panel>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

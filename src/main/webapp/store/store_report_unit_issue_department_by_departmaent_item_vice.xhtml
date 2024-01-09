@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+
+        <ui:composition template="/store/store_summery_index.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+
+                    <p:panel header="Unit Issue Report" >
+
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="Issue From" />
+                            <p:autoComplete completeMethod="#{departmentController.completeDept}" var="dept" 
+                                            itemLabel="#{dept.name}" itemValue="#{dept}" forceSelection="true" 
+                                            value="#{storeReportsTransfer.fromDepartment}"  >
+                            </p:autoComplete>
+                            <h:outputLabel value="To" />
+                            <p:autoComplete completeMethod="#{departmentController.completeDept}" var="dept" 
+                                            itemLabel="#{dept.name}" itemValue="#{dept}" forceSelection="true" 
+                                            value="#{storeReportsTransfer.toDepartment}"  >
+                            </p:autoComplete>
+
+
+                            <h:outputLabel value="From" />
+                            <p:calendar value="#{storeReportsTransfer.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+
+
+                            <h:outputLabel value="To" />
+                            <p:calendar value="#{storeReportsTransfer.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="3">
+                            <p:commandButton ajax="false" value="Fill" action="#{storeReportsTransfer.fillDepartmentIssueByBillItem}" />
+
+                            <p:commandButton value="Print" ajax="false" action="#" >
+                                <p:printer target="gpBillPreview" />
+                            </p:commandButton>
+
+
+                        </h:panelGrid>
+
+
+                        <h:panelGroup id="gpBillPreview" styleClass="summeryBorder noBorder " >
+
+
+                            <p:dataTable id="tbl"  value="#{storeReportsTransfer.drows}" var="i"  >
+
+                                <p:column headerText="Department Unit Issue By Department - Detailed" >
+
+                                    <p:dataTable id="tblDep" value="#{i.categoryBillRows}" var="cbr" >
+                                        <f:facet name="header">
+                                            <h:outputLabel value= "#{i.department.name}" />
+                                            <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton" style="float: right;" >
+                                                <p:dataExporter  type="xlsx" target="tblDep" fileName="Unit_Issue_Report_by_department"  />
+                                            </p:commandButton>  
+                                        </f:facet>
+
+                                        <p:columnGroup type="header">
+                                            <p:row>
+                                                <p:column rowspan="2" headerText="Category" />
+                                                <p:column colspan="3" headerText="Issues" />
+                                            </p:row>
+                                            <p:row>
+                                                <p:column headerText="App. Rate" />
+                                                <p:column headerText="Qty" />
+                                                <p:column headerText="Total" />
+                                            </p:row>
+                                        </p:columnGroup>
+
+
+
+
+                                        <p:subTable id="tblCat" value="#{cbr.itemBillRows}" var="ibr" >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{cbr.category.name}" />
+                                                <h:outputText value="#{cbr.bill.netTotal}" style="float: right;" >
+                                                    <f:convertNumber pattern="#,##0.00"></f:convertNumber>
+                                                </h:outputText>
+                                            </f:facet>
+
+                                            <p:column headerText="Item" >
+                                                <h:outputText value="#{ibr.item.name}"></h:outputText>
+                                            </p:column>
+                                            <p:column headerText="App. Rate"  style="text-align: right;">
+                                                <h:outputText value="#{ibr.bill.netTotal / ibr.bill.grantTotal}" >
+                                                    <f:convertNumber pattern="#,##0.00"></f:convertNumber>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column  style="text-align: right;">
+                                                <h:outputText value="#{ibr.bill.grantTotal}" >
+                                                    <f:convertNumber pattern="#,##0.00"></f:convertNumber>
+                                                </h:outputText>
+
+                                            </p:column>
+                                            <p:column  style="text-align: right;">
+                                                <h:outputText value="#{ibr.bill.netTotal}">
+                                                    <f:convertNumber pattern="#,##0.00"></f:convertNumber>
+                                                </h:outputText>
+                                            </p:column>
+                                        </p:subTable>
+
+                                        <f:facet name="footer" >
+                                            <h:outputLabel value="Department Total" />
+                                            <h:outputText value="#{i.bill.netTotal}" style="float: right;" >
+                                                <f:convertNumber pattern="#,##0.00"/>
+                                            </h:outputText>
+                                        </f:facet>
+
+                                    </p:dataTable>
+
+                                </p:column>
+
+
+                                <f:facet name="header" >
+
+                                    <h:outputLabel value="Unit Issue From "/>
+                                    <h:outputLabel value="#{storeReportsTransfer.fromDepartment.name}"/> 
+                                    <h:outputLabel value="To"/>
+                                    <h:outputLabel value="#{storeReportsTransfer.toDepartment.name}"/> 
+                                    <h:outputLabel value="From : " style=" white-space:pre-line;"/>
+                                    <h:outputLabel value="#{storeReportsTransfer.fromDate}">
+                                        <f:convertDateTime pattern="dd MMM yyyy hh:mm:ss a" ></f:convertDateTime>
+                                    </h:outputLabel>
+                                    <h:outputLabel value="&emsp;&emsp;To : "/>
+                                    <h:outputLabel value="#{storeReportsTransfer.toDate}">
+                                        <f:convertDateTime pattern="dd MMM yyyy hh:mm:ss a" ></f:convertDateTime>
+                                    </h:outputLabel>
+                                    
+                                </f:facet>
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{storeReportsTransfer.purchaseValue}" style="float: right;" >
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel><br/><br/>
+                                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                                </f:facet>
+                            </p:dataTable>
+
+
+
+                        </h:panelGroup>
+                    </p:panel>
+                </h:form>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

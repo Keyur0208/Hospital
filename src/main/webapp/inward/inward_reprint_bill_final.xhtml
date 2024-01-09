@@ -1,0 +1,450 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:bi="http://java.sun.com/jsf/composite/inward/bill" 
+      xmlns:in="http://java.sun.com/jsf/composite/inward" >
+
+    <h:body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+                <h:form>
+                    <p:panel rendered="#{inwardSearch.patient.person ne null}">
+                        <p:panel styleClass="alignTop" rendered="#{inwardSearch.patient.person ne null}" class="m-1">
+                            
+                                        <f:facet name="header">
+                                        <h:outputText styleClass="fas fa-print"></h:outputText>
+                                        <h:outputLabel value="Reprints" class="mx-4"></h:outputLabel>
+                                        </f:facet>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p:panel header="Bill Reprints"
+                                             rendered="true">                            
+                                        <h:panelGrid columns="2" class="w-100">
+                                            <p:commandButton value="Final Bill &amp; Profesional Bill - Single page" ajax="false" class="m-1">
+                                            <p:printer target="claimablePatientCopy2" ></p:printer>
+                                        </p:commandButton>
+                                        <p:commandButton value="Final Bill &amp; Profesional Bill - 3 pages" ajax="false" class="m-1">
+                                            <p:printer target="professionalAndFinaBill" ></p:printer>
+                                        </p:commandButton>
+                                        <p:commandButton value="Final Bill &amp; Profesional Bill(Duplicate)" ajax="false" class="m-1">
+                                            <p:printer target="professionalAndFinaBillDup" ></p:printer>
+                                        </p:commandButton>
+                                        <p:commandButton value="Print Credit Company Letter" ajax="false" class="m-1" >
+                                            <p:printer target="letter" ></p:printer>
+                                        </p:commandButton>
+                                        </h:panelGrid>
+                                        
+
+                                    </p:panel>
+                                    <p:panel header="Claimable Bill Reprints" 
+                                             rendered="#{inwardSearch.bill.patientEncounter.admissionType.admissionTypeEnum ne 'DayCase' and sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                            
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton value="Print Patient Copy" ajax="false">
+                                                <p:printer target="claimablePatientCopy" ></p:printer>
+                                            </p:commandButton>   
+                                            <p:commandButton value="Print Patient Copy(Invoice)" ajax="false"  rendered="false" >
+                                                <p:printer target="claimablePatientCopy2" ></p:printer>
+                                            </p:commandButton>   
+                                            <p:commandButton value="Print Patient Detailed Copy" ajax="false">
+                                                <p:printer target="claimablePatientDetailCopy" ></p:printer>
+                                            </p:commandButton>   
+                                            <p:commandButton value="Print Duplicate Copy" ajax="false"  >
+                                                <p:printer target="claimableDuplicate" ></p:printer>
+                                            </p:commandButton>
+
+                                            <p:commandButton value="Print Credit Company Letter" ajax="false"  >
+                                                <p:printer target="letter" ></p:printer>
+                                            </p:commandButton>
+
+
+                                        </h:panelGrid>
+                                    </p:panel>
+
+                                    <p:panel header="Non Claimable Bill Reprints" rendered="#{inwardSearch.bill.patientEncounter.admissionType.admissionTypeEnum ne 'DayCase' and sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton value="Patient Copy without Professional" ajax="false">
+                                                <p:printer target="notClaimablePatientCopy" ></p:printer>
+                                            </p:commandButton>                              
+                                            <p:commandButton value="Duplicate wihout Professional" ajax="false">
+                                                <p:printer target="notClaimableDuplicate" ></p:printer>
+                                            </p:commandButton>  
+                                            <p:commandButton value="Professional Fees" ajax="false">
+                                                <p:printer target="professional" ></p:printer>
+                                            </p:commandButton>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                    <p:panel header="Claimable Bill Reprints" rendered="#{inwardSearch.bill.patientEncounter.admissionType.admissionTypeEnum eq 'DayCase'and sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                            
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton ajax="false" value="Green Sheet Print"  >
+                                                <p:printer target="finalBillGreenSheet" ></p:printer>
+                                            </p:commandButton>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                    <p:panel header="Non Claimable Bill Reprints" rendered="#{inwardSearch.bill.patientEncounter.admissionType.admissionTypeEnum eq 'DayCase' and sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton ajax="false" value="Green Sheet Print Without Professional">
+                                                <p:printer target="finalBillGreenSheetWithoutPro" ></p:printer>
+                                            </p:commandButton>
+                                            <p:commandButton value="Professional Fees" ajax="false">
+                                                <p:printer target="professional" ></p:printer>
+                                            </p:commandButton>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                    <p:panel header="Bill Reprints" rendered="#{inwardSearch.bill.patientEncounter.admissionType.admissionTypeEnum eq 'DayCase' and sessionController.userPreference.applicationInstitution eq 'Ruhuna'}">
+
+                                        <h:panelGrid columns="2">
+                                            <h:outputLabel value="Dialysis No" ></h:outputLabel>
+                                            <h:inputText value="#{inwardSearch.reportKeyWord.string}" ></h:inputText>
+
+                                            <p:commandButton value="Refresh" action="#" ajax="false" />
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton value="Green Sheet Print &amp; Professional Fees" ajax="false">
+                                                <p:printer target="finalBillGreenSheetWithoutProAndProfsional" ></p:printer>
+                                            </p:commandButton>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </div>
+                                <div class="col-md-2">
+                                    <p:panel header="Actions">
+                                        <p:commandButton ajax="false" value="To Cancel Bill" action="inward_cancel_bill_final" disabled="#{inwardSearch.bill.cancelled}"  />
+                                        <!--<p:commandButton rendered="false" ajax="false" value="Update" action="#{inwardSearch.update()}"  />-->
+                                        <!--<p:commandButton rendered="false" ajax="false" value="Replace" action="#{inwardSearch.replace()}"  />-->
+                                    </p:panel>
+                                </div>
+                            </div>
+
+
+                        </p:panel>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p:panel header="Patient Detail" rendered="#{inwardSearch.patient.person ne null}">
+                                    <f:facet name="header">
+                                        <h:outputText styleClass="fas fa-user"></h:outputText>
+                                        <h:outputLabel value="Patient Detail" class="mx-4"></h:outputLabel>
+                                    </f:facet>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Patient ​Name:" ></h:outputLabel>
+                                        <h:inputText disabled="#{!webUserController.hasPrivilege('InwardFinalBillReportEdit')}" value="#{inwardSearch.bill.patient.person.name}" ></h:inputText>
+                                        <h:outputLabel value="Date of Birth" />
+
+
+                                        <p:calendar disabled="#{!webUserController.hasPrivilege('InwardFinalBillReportEdit')}"  value="#{inwardSearch.bill.patient.person.dob}" 
+                                                    id="calNewPtDob"  navigator="true" pattern="#{sessionController.applicationPreference.shortDateFormat}" 
+                                                    style="width: 100px!important;"
+                                                    styleClass="shortinput">
+
+                                        </p:calendar>
+
+
+                                        <h:outputLabel value="Sex" >
+                                        </h:outputLabel>
+                                        <p:selectOneMenu disabled="#{!webUserController.hasPrivilege('InwardFinalBillReportEdit')}" id="txtNewSex"  value="#{inwardSearch.bill.patient.person.sex}" >
+                                            <f:selectItem itemLabel="Select Sex"/>
+                                            <f:selectItems value="#{inwardSearch.sex}"/>
+                                        </p:selectOneMenu>
+
+                                        <h:outputLabel value="Phone" >
+                                        </h:outputLabel>
+                                        <p:inputText  disabled="#{!webUserController.hasPrivilege('InwardFinalBillReportEdit')}" value="#{inwardSearch.bill.patient.person.phone}" >
+                                        </p:inputText>
+                                        <h:outputLabel value="Patient ​Address" ></h:outputLabel>
+                                        <h:inputText disabled="#{!webUserController.hasPrivilege('InwardFinalBillReportEdit')}" value="#{inwardSearch.bill.patient.person.address}" ></h:inputText>
+
+
+                                    </p:panelGrid>
+                                    <p:commandButton value="Update" action="#{inwardSearch.updatePatiantDetails()}" ajax="false" class="m-1"></p:commandButton>
+                                </p:panel>
+                            </div>
+                            <div class="col-md-6">
+                                <p:panel>
+                                    <f:facet name="header">
+                                        <h:outputText styleClass="fas fa-file-invoice"></h:outputText>
+                                        <h:outputLabel value="Bill Detail" class="mx-4"></h:outputLabel>
+                                    </f:facet>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Bill No :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.insId}" ></h:outputLabel>
+                                        <h:outputLabel value="Total :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.grantTotal}" style="float: right;" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Discount :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.discount}" style="float: right;" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Net Total :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.netTotal}" style="float: right;" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Paid Amount : " ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.paidAmount+inwardSearch.bill.patientEncounter.paidByCreditCompany}" style="float: right;" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Due :" ></h:outputLabel>
+                                        <h:outputLabel value="#{inwardSearch.bill.netTotal-(inwardSearch.bill.paidAmount+inwardSearch.bill.patientEncounter.paidByCreditCompany)}" style="float: right;" >
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Credit Limit"/>
+                                        <p:inputText value="#{inwardSearch.bill.patientEncounter.creditLimit}"
+                                                     rendered="#{inwardSearch.bill.patientEncounter.paymentMethod eq 'Credit'}" />
+                                        <p:commandButton ajax="false" value="SET CREDIT LIMIT"
+                                                         action="#{inwardSearch.edit()}"
+                                                         rendered="#{inwardSearch.bill.patientEncounter.paymentMethod eq 'Credit'}"    />
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+
+                        </div>
+
+                        <div class="m-1">
+                            <in:finalTable bill="#{inwardSearch.bill}"/>
+                        </div>
+
+
+
+
+                        <h:panelGroup id="claimablePatientCopy"  rendered="false">                  
+                            <bi:finalBill   bill="#{inwardSearch.bill}" showProfessional="true"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="claimablePatientCopy2"  rendered="true" >                  
+                            <bi:finalBill_vat   bill="#{inwardSearch.bill}"   showProfessional="true"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="professionalAndFinaBill" rendered="#{sessionController.userPreference.applicationInstitution eq 'Ruhuna'}"> 
+                            <bi:finalBill  bill="#{inwardSearch.bill}" hosCopy="true"/>
+                            <bi:finalProfessionalBill bill="#{inwardSearch.bill}" hosCopy="true" />
+                            <bi:finalBill_1 bill="#{inwardSearch.bill}" hosCopy="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup id="professionalAndFinaBillDup" rendered="#{sessionController.userPreference.applicationInstitution eq 'Ruhuna'}"> 
+                            <bi:finalBill  bill="#{inwardSearch.bill}" duplicate="true"/>
+                            <bi:finalProfessionalBill bill="#{inwardSearch.bill}" duplicate="true" />
+                            <bi:finalBill_1 bill="#{inwardSearch.bill}" duplicate="true"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="letter">
+                            <!--<bi:credit_company_letter bill="#{inwardSearch.bill}"/>--> 
+                            <bi:credit_company_letter_new bill="#{inwardSearch.bill}"/> 
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="claimableHospitalCopy" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                    
+                            <bi:finalBill  hosCopy="true" showProfessional="true"                              
+                                           bill="#{inwardSearch.bill}"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="claimableDuplicate" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                    
+                            <bi:finalBill duplicate="true"   showProfessional="true"                            
+                                          bill="#{inwardSearch.bill}" />
+                        </h:panelGroup>
+
+                        <h:panelGroup id="notClaimablePatientCopy" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">
+                            <bi:finalBill  bill="#{inwardSearch.bill}" />
+                        </h:panelGroup>
+
+                        <h:panelGroup id="notClaimableHospitalCopy" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                    
+                            <bi:finalBill  hosCopy="true" bill="#{inwardSearch.bill}"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="professional" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">       
+                            <bi:finalProfessionalBill bill="#{inwardSearch.bill}"  />
+                        </h:panelGroup>
+
+                        <h:panelGroup id="notClaimableDuplicate" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                
+                            <bi:finalBill duplicate="true"                               
+                                          bill="#{inwardSearch.bill}" />
+                        </h:panelGroup>
+
+
+
+                        <h:panelGroup id="finalBillGreenSheet" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                  
+                            <bi:finalBillGreenSheet  bill="#{inwardSearch.bill}" showProfessional="true"/>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="finalBillGreenSheetWithoutPro" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}">                  
+                            <bi:finalBillGreenSheet  bill="#{inwardSearch.bill}" showProfessional="false"/>
+                        </h:panelGroup>
+                        <h:panelGroup id="finalBillGreenSheetWithoutProAndProfsional" styleClass="noBorder" rendered="#{sessionController.userPreference.applicationInstitution eq 'Ruhuna'}">                  
+                            <bi:finalBillGreenSheet  bill="#{inwardSearch.bill}" showProfessional="false"/>
+                            <bi:finalProfessionalBill bill="#{inwardSearch.bill}" />
+                        </h:panelGroup>
+
+
+                        <h:outputStylesheet library="css" name="printing.css" ></h:outputStylesheet>
+
+
+
+                    </p:panel>
+
+
+                    <h:panelGroup id="claimablePatientDetailCopy" rendered="#{sessionController.userPreference.applicationInstitution ne 'Ruhuna'}"> 
+
+                        <div style="width: 100%; text-align: center; margin: auto; padding: 10px; " >
+                            <div styleClass="noBorderWhenPrint" style="width: 21.0cm; " >
+                                <bi:finalBill   bill="#{inwardSearch.bill}" showProfessional="true"/>
+                            </div>
+                            <div>
+                                <p:dataTable id="pharmacy" value="#{bhtSummeryFinalizedController.pharmacyItems}" var="iss" 
+                                             sortBy="#{iss.bill.deptId}"
+                                             rowStyleClass="#{(iss.bill.netTotal ne 0 )                                                                       
+                                                              and                                                                        
+                                                              ((iss.bill.billClass eq 'class com.divudi.entity.PreBill')
+                                                              or 
+                                                              (iss.bill.billedBill ne null 
+                                                              and iss.bill.billClass eq 'class com.divudi.entity.RefundBill'))? '':'noDisplayRow'}">
+                                    <p:column headerText="Bill No">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Bill No"/>
+                                        </f:facet>
+                                        <h:outputLabel value="#{iss.bill.deptId}"/>                                    
+                                    </p:column>                  
+                                    <p:column headerText="Item Name">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Item Name"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.item.name}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column headerText="Qty">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Qty"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.qty}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>                               
+                                    <p:column style="text-align: right;" headerText="Total Value"  exportable="false">
+                                        <h:outputLabel  value="#{iss.grossValue}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;" headerText="Margin Value" exportable="false">
+                                        <h:outputLabel  value="#{iss.marginValue}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;" headerText="Gross Value" >
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Gross Value"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.grossValue+iss.marginValue}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;" headerText="Discount Value">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Discount Value"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.discount}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;" headerText="Net Value">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Net Value"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.netValue}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+                                    <p:column style="text-align: right;" headerText="Adjusted Value">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Adjusted Value"/>
+                                        </f:facet>
+                                        <h:outputLabel  value="#{iss.adjustedValue}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </p:column>
+
+                                    <p:column headerText="Created At" exportable="false">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Created At"/> 
+                                        </f:facet>
+                                        <h:outputLabel value="#{iss.bill.createdAt}">
+                                            <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                        </h:outputLabel>                                                   
+                                        <br/>
+                                        <h:panelGroup rendered="#{iss.bill.cancelled}" >
+                                            <h:outputLabel style="color: red;" value="Cancelled at " />
+                                            <h:outputLabel style="color: red;" rendered="#{iss.bill.cancelled}" 
+                                                           value="#{iss.bill.cancelledBill.createdAt}" >
+                                                <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                            </h:outputLabel>
+                                        </h:panelGroup>
+                                    </p:column>
+
+                                    <p:column headerText="Billed By" exportable="false" >
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Billed By"/> 
+                                        </f:facet>
+                                        <h:outputLabel value="#{iss.bill.creater.webUserPerson.name}"/>     
+                                        <br/>
+                                        <h:panelGroup rendered="#{iss.bill.cancelled}" >
+                                            <h:outputLabel style="color: red;" value="Cancelled By " />
+                                            <h:outputLabel style="color: red;" rendered="#{iss.bill.cancelled}" 
+                                                           value="#{iss.bill.cancelledBill.creater.webUserPerson.name}" >                                       
+                                            </h:outputLabel>
+                                        </h:panelGroup>
+                                    </p:column>   
+                                    <p:column headerText="Edited" exportable="false">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Edited"/> 
+                                        </f:facet>
+                                        <h:panelGroup  rendered="#{iss.bill.editor ne null}" >
+                                            <h:outputLabel style="color: #008000;" value="Edited By " />
+                                            <h:outputLabel style="color: #008000;" 
+                                                           value="#{iss.bill.editor.webUserPerson.name}" >
+                                            </h:outputLabel>
+                                        </h:panelGroup>
+                                        <h:panelGroup  rendered="#{iss.bill.editedAt ne null}" >
+                                            <h:outputLabel style="color: #008000;" value="Edited at " />
+                                            <h:outputLabel style="color: #008000;" 
+                                                           value="#{iss.bill.editedAt}" >
+                                                <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                            </h:outputLabel>
+                                        </h:panelGroup>
+                                    </p:column>
+                                    <p:column headerText="Checked" exportable="false">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Checked"/> 
+                                        </f:facet>
+                                        <h:panelGroup  rendered="#{iss.bill.checkedBy ne null}" >
+
+                                            <h:outputLabel style="color: #008000;" 
+                                                           value="#{iss.bill.checkedBy.webUserPerson.name}" >
+                                            </h:outputLabel>
+                                        </h:panelGroup><br/>
+                                        <h:panelGroup  rendered="#{iss.bill.checkeAt ne null}" >
+
+                                            <h:outputLabel style="color: #008000;" 
+                                                           value="#{iss.bill.checkeAt}" >
+                                                <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                                            </h:outputLabel>
+                                        </h:panelGroup>                        
+                                    </p:column>
+
+                                </p:dataTable>
+                            </div>
+                        </div>
+
+                    </h:panelGroup>
+
+                </h:form>
+
+            </ui:define>
+
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

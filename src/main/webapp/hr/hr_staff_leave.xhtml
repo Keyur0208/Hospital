@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/resources/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:define name="content">
+        <h:form>
+            <h:panelGrid columns="2">
+              
+                <p:dataTable id="lst" value="#{staffLeaveController.staffLeaves}" var="i" >
+                    <p:column headerText="Leave Type">                   
+                        <h:outputLabel value="#{i.leaveType}"/>
+                    </p:column>
+                    <p:column headerText="From Date">
+                        <h:outputLabel value="#{i.fromDate}">
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}"/>
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="To Date">
+                        <h:outputLabel value="#{i.toDate}">
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}"/>
+                        </h:outputLabel>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+        </h:form>
+    </ui:define> 
+
+</ui:composition>

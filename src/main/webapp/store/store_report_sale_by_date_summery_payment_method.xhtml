@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+               template="/store/store_summery_index.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                >
+
+    <ui:define name="subcontent">
+        <h:form>
+            <p:panel header="3) Sale Report By Payment Method">
+                <h:panelGrid columns="2" styleClass="noPrintButton">
+                    <h:outputLabel value="From Date"/>
+                    <p:calendar value="#{storeSaleReport.fromDate}" navigator="true" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"   >
+                    </p:calendar>
+                    <h:outputLabel value="To Date"/>
+                    <p:calendar value="#{storeSaleReport.toDate}" navigator="true" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                    </p:calendar>
+                    <h:outputLabel value="Department"/>
+                    <p:autoComplete styleClass="noPrintButton"  value="#{storeSaleReport.department}"  style="text-align: left; margin: 0px; padding: 0px;"  completeMethod="#{departmentController.completeDept}" var="dept" itemValue="#{dept}" itemLabel="#{dept.name}" forceSelection="true" rendered="true" requiredMessage="You must select a department" >
+                    </p:autoComplete>
+
+                </h:panelGrid>
+            </p:panel>
+            <p:panel id="panelPrint">
+                <h:panelGrid columns="3">
+                    <p:commandButton ajax="false" value="Process" action="#{storeSaleReport.createSalePaymentMethod()}" styleClass="noPrintButton"/>
+                    <p:commandButton actionListener="#{storeSaleReport.createSalePaymentMethod()}" ajax="false" value="Excel" styleClass="noPrintButton" style="float: right;" >
+                        <p:dataExporter type="xlsx" target="sum1" fileName="report_pharmacy_sale_by_date_summery_payment_method"  />
+                    </p:commandButton>
+                    <p:commandButton ajax="false" value="Print" styleClass="noPrintButton" >
+                        <p:printer target="panelPrint" />
+                    </p:commandButton>
+                </h:panelGrid>
+
+                <h:panelGrid styleClass="printBlock" columns="2">
+
+                </h:panelGrid>
+
+                <p:dataTable id="sum1" value="#{storeSaleReport.billedPaymentSummery.bills}" var="i">
+                    <f:facet name="header">  
+                        <h:outputLabel value="Sale Summary Report By Date"/>
+                        <h:outputLabel value="#{storeSaleReport.department.name}"/>
+                        <br/>
+                        <h:outputLabel value="From Date :  "/>
+                        <h:outputLabel value="#{storeSaleReport.fromDate}"  >
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                        </h:outputLabel>
+                        <p:spacer width="30" height="1"/>
+                        <h:outputLabel value="To Date"/>
+                        <h:outputLabel value="#{storeSaleReport.toDate}"  >
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                        </h:outputLabel>
+                        <br/>
+                        <p:outputLabel value="Department :" />
+                        <h:outputLabel value="#{storeSaleReport.department.name}" />
+
+                    </f:facet>
+
+                    <p:column headerText="Date">
+                        <f:facet name="header">
+                            <h:outputLabel value="Date" />
+                        </f:facet>
+                        <h:outputLabel value="#{i.string}"/>
+                    </p:column>
+                    <p:column headerText="CASH" style="text-align: right;">
+                        <f:facet name="header">
+                            <h:outputLabel value="Cash" />
+                        </f:facet>
+                        <h:outputLabel value="#{i.value1}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="CREDIT" style="text-align: right;">
+                        <f:facet name="header">
+                            <h:outputLabel value="Credit" />
+                        </f:facet>
+                        <h:outputLabel value="#{i.value2}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="CARD" style="text-align: right;">
+                        <f:facet name="header">
+                            <h:outputLabel value="Card" />
+                        </f:facet>
+                        <h:outputLabel value="#{i.value3}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column headerText="TOTAL" style="text-align: right;">
+                        <f:facet name="header">
+                            <h:outputLabel value="Total" />
+                        </f:facet>
+                        <h:outputLabel value="#{i.value4}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:columnGroup type="footer">
+                        <p:row>
+                            <p:column footerText="Total  " colspan="1" />
+                            <p:column footerText="#{storeSaleReport.billedPaymentSummery.cashTotal}" style="text-align: right;">
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{storeSaleReport.billedPaymentSummery.cashTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{storeSaleReport.billedPaymentSummery.creditTotal}" style="text-align: right;">
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{storeSaleReport.billedPaymentSummery.creditTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{storeSaleReport.billedPaymentSummery.cardTotal}" style="text-align: right;">
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{storeSaleReport.billedPaymentSummery.cardTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column footerText="#{storeSaleReport.billedPaymentSummery.cashTotal+storeSaleReport.billedPaymentSummery.creditTotal+storeSaleReport.billedPaymentSummery.cardTotal}" style="text-align: right;">
+                                <f:facet name="footer" >
+                                    <h:outputLabel value="#{storeSaleReport.billedPaymentSummery.cashTotal+storeSaleReport.billedPaymentSummery.creditTotal+storeSaleReport.billedPaymentSummery.cardTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                        </p:row>
+                    </p:columnGroup>
+                </p:dataTable>
+
+
+                <p:spacer height="30"/>
+
+                <h:panelGrid columns="2" style="min-width: 100%;">
+                    <h:outputLabel value="Net Cash"/>
+                    <h:outputLabel value="#{storeSaleReport.grantCashTotal}">
+                        <f:convertNumber pattern="#,##0.00" />
+                    </h:outputLabel>
+                    <h:outputLabel value="Net Credit"/>
+                    <h:outputLabel value="#{storeSaleReport.grantCreditTotal}" >
+                        <f:convertNumber pattern="#,##0.00" />
+                    </h:outputLabel>
+                    <h:outputLabel value="Net Card"/>
+                    <h:outputLabel value="#{storeSaleReport.grantCardTotal}">
+                        <f:convertNumber pattern="#,##0.00" />
+                    </h:outputLabel>
+                </h:panelGrid>
+                <f:facet name="footer" >
+                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                </f:facet>
+            </p:panel>         
+
+
+        </h:form>
+
+    </ui:define>
+
+
+
+</ui:composition>

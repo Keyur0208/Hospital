@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+
+        <ui:composition template="/inward/inward_reports.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+
+                    <p:panel header="Dischrge Book" >
+
+                        <h:panelGrid columns="2" >
+
+                            <h:outputLabel value="From" ></h:outputLabel>
+                            <p:calendar value="#{inwardReportController.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                            <h:outputLabel value="To" ></h:outputLabel>
+                            <p:calendar value="#{inwardReportController.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+
+                            <p:outputLabel value="Admission Type"/>
+                            <p:selectOneMenu value="#{inwardReportController.admissionType}">
+                                <f:selectItem itemLabel="All Admission Type"/>
+                                <f:selectItems  value="#{inwardReportController.admissionty}" var="myItem" 
+                                                itemValue="#{myItem}" itemLabel="#{myItem.name}"></f:selectItems>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="BHT Type" ></h:outputLabel>
+                            <p:selectOneMenu   id="cmbBhtType" value="#{inwardReportController.paymentMethod}"  >
+                                <f:selectItem itemLabel="All BHT Types" />                           
+                                <f:selectItems value="#{enumController.paymentMethodForAdmission}" />
+                            </p:selectOneMenu>
+
+
+                            <h:outputLabel value="Company Name" style="min-width: 100px;"  />  
+                            <p:autoComplete id="acCreditCompany" forceSelection="true" style="text-align: right;"
+                                            value="#{inwardReportController.institution}"  
+                                            completeMethod="#{creditCompanyController.completeCredit}" 
+                                            var="ix" itemLabel="#{ix.name}" 
+                                            itemValue="#{ix}" size="30" >  
+                                <f:ajax event="itemSelect" execute="@this"  ></f:ajax>
+                            </p:autoComplete>
+                            <h:outputLabel value="Referring Doctor" style="min-width: 100px;"  />
+                            <p:autoComplete id="acRefDoc" 
+                                            forceSelection="true" 
+                                            value="#{inwardReportController.reportKeyWord.staff}"
+                                            completeMethod="#{inwardStaffPaymentBillController.completeReferringDoctor}" 
+                                            var="ix"
+                                            itemLabel="#{ix.person.name}" 
+                                            itemValue="#{ix}" 
+                                             >
+                            </p:autoComplete>
+
+
+                        </h:panelGrid>
+                        <h:panelGrid columns="16" id="paItems">
+                            <p:outputLabel value="Discharge" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.dischargeDate}"/>
+                            <p:outputLabel value="BHT No" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.bhtNo}" />
+                            <p:outputLabel value="Payment Methord" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.paymentMethord}" />
+                            <p:outputLabel value="Credit Company" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.creditCompany}" />
+                            <p:outputLabel value="Patient Details" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.person}" />
+                            <p:outputLabel value="Room" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.room}" />
+                            <p:outputLabel value="Refering Doctor" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.refDoctor}" />
+                            <p:outputLabel value="Admit Date" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.addmitDetails}" />
+                            <p:outputLabel value="Billed By" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.billedBy}" />
+                            <p:outputLabel value="Final Bill Total" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.finalBillTotal}" />
+                            <p:outputLabel value="Paid By Patient" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.paidByPatient}" />
+                            <p:outputLabel value="Credit Paid Amount" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.creditPaidAmount}" />
+                            <p:outputLabel value="Due Amount" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.dueAmount}" />
+                            <p:outputLabel value="Calculated Amount" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.calculatedAmount}" />
+                            <p:outputLabel value="Different Amount" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.differentAmount}" />
+                            <p:outputLabel value="For Developers" />
+                            <p:selectBooleanCheckbox value="#{inwardReportController.developers}" >
+                                <p:ajax process="@this" update="paItems" listener="#{inwardReportController.listnerDeveloperCheckBox()}" />
+                            </p:selectBooleanCheckbox>
+                        </h:panelGrid>
+
+                        <p:panelGrid columns="6">
+                            <p:commandButton ajax="false" value="Fill Discharged All" action="#{inwardReportController.fillDischargeBook()}"  ></p:commandButton>                                                                                     
+                            <p:commandButton ajax="false" value="Fill Discharged and Payment Not Finalized " action="#{inwardReportController.fillDischargeBookPaymentNotFinalized()}"  ></p:commandButton>
+                            <p:commandButton ajax="false" value="Fill Discharged and Payment Finalized" action="#{inwardReportController.fillDischargeBookPaymentFinalized()}"  ></p:commandButton>
+                            <p:commandButton value="Print" ajax="false" action="#" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+
+                            <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton" style="float: right;"  >
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Detailed_Transfer_Listing"  />
+                            </p:commandButton>  
+                        </p:panelGrid>
+
+
+                        <h:panelGroup id="gpBillPreview">
+                            <p:dataTable id="tbl" styleClass="noBorder normalFont" 
+                                         value="#{inwardReportController.patientEncounters}" var="i" rowIndexVar="in" rowStyleClass="#{(i.finalBill.netTotal-i.transTotal) > 0.5  ? 'redText':''}" >
+                                <f:facet name="header">
+                                    <h:outputLabel value="Inward Discharge Details "/>
+                                    <h:panelGrid columns="4">
+                                        <h:outputLabel value="From  "/>
+                                        <h:outputLabel value="#{inwardReportController.fromDate}">
+                                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="To  "/>
+                                        <h:outputLabel value="#{inwardReportController.toDate}">
+                                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                        </h:outputLabel>
+                                    </h:panelGrid>
+                                </f:facet>
+
+
+                                <p:column>
+                                    #{in+1}
+                                </p:column>
+                                <p:column headerText="BHT No" sortBy="#{i.bhtNo}" rendered="#{inwardReportController.bhtNo or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="BHT No"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.bhtNo}" ></h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Discharge Date" sortBy="#{i.dateOfDischarge}" rendered="#{inwardReportController.dischargeDate}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Discharge Date"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.dateOfDischarge}"  >
+                                        <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.shortDateFormat}"  ></f:convertDateTime>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Discharge Date" sortBy="#{i.dateOfDischarge}" rendered="#{inwardReportController.dischargeDate}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Discharge Date"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.dateOfDischarge}"  >
+                                        <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longTimeFormat}"  ></f:convertDateTime>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Discharge By" sortBy="#{i.finalBill.creater.webUserPerson.name}" rendered="#{inwardReportController.billedBy}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Discharge By"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.finalBill.creater.webUserPerson.name}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Admitted Date" sortBy="#{i.dateOfAdmission}" rendered="#{inwardReportController.addmitDetails}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Admited Date"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.dateOfAdmission}"  >
+                                        <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.shortDateFormat}"  ></f:convertDateTime>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Admitted By" sortBy="#{i.creater.webUserPerson.name}" rendered="#{inwardReportController.addmitDetails}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Admited By"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.creater.webUserPerson.name}"  >
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Payment Method" sortBy="#{i.paymentMethod}" rendered="#{inwardReportController.paymentMethord}" >
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Payment Method"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.paymentMethod}"  >
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Credit Company Name" sortBy="#{i.creditCompany.name}" rendered="#{inwardReportController.creditCompany}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Credit Company Name"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel  value="#{i.creditCompany.name}" >
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Phone" rendered="#{inwardReportController.person}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Phone"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.patient.person.mobile}"  >
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Room" sortBy="#{i.currentPatientRoom.roomFacilityCharge.room.name}" rendered="#{inwardReportController.room}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Room"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.currentPatientRoom.roomFacilityCharge.room.name}" >
+                                    </h:outputLabel>
+                                </p:column>
+
+
+                                <p:column headerText="Patient Name" sortBy="#{i.patient.person.name}" rendered="#{inwardReportController.person}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Patient Name"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.patient.person.name}"  >
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Referring Consultant" sortBy="#{i.referringDoctor.person.nameWithTitle}" rendered="#{inwardReportController.person}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Referring Consultant"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.referringDoctor.person.nameWithTitle}"  >
+                                    </h:outputLabel>
+                                </p:column>
+
+
+
+                                <p:column headerText="Address" rendered="#{inwardReportController.person}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Address"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.patient.person.address}"  >
+                                    </h:outputLabel>
+                                </p:column>
+
+
+
+                                <p:column styleClass="averageNumericColumn" sortBy="#{i.finalBill.netTotal}" headerText="Final Bill Total" rendered="#{inwardReportController.finalBillTotal or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Final Bill Total"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.finalBill.netTotal}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.total}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column styleClass="averageNumericColumn" headerText="Paid BY PATIENT" rendered="#{inwardReportController.paidByPatient or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Paid BY PATIENT"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.finalBill.paidAmount}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.paid}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column styleClass="averageNumericColumn" headerText="Credit Paid Amount" rendered="#{inwardReportController.creditPaidAmount or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Credit Paid Amount"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.creditPaidAmount}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.creditPaid}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column styleClass="averageNumericColumn" headerText="Due Amount" rendered="#{inwardReportController.dueAmount or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Due Amount"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.finalBill.netTotal-(i.finalBill.paidAmount+i.paidByCreditCompany)}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.total-(inwardReportController.paid+inwardReportController.creditPaid)}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column styleClass="averageNumericColumn" headerText="Calculated Amount" rendered="#{inwardReportController.calculatedAmount or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Calculated Amount"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.transTotal}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.calTotal}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column styleClass="averageNumericColumn" sortBy="#{i.finalBill.netTotal-i.transTotal}" headerText="Difference Amount" rendered="#{inwardReportController.differentAmount or inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Differece Amount"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.finalBill.netTotal-i.transTotal}"  >
+                                        <f:convertNumber pattern="#,##0.00"/>
+                                    </h:outputLabel>
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{inwardReportController.total-inwardReportController.calTotal}"  >
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column headerText="BHT No" rendered="#{inwardReportController.developers}">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="BHT No"/>
+                                    </f:facet>
+                                    <h:commandLink value="#{i.bhtNo}" action="/inward/inward_report_bht_income_by_caregories_bht" 
+                                                   actionListener="#{inwardReportControllerBht.process()}" 
+                                                   rendered="#{webUserController.hasPrivilege('Developers')}" target="_blank" >
+                                        <f:setPropertyActionListener value="#{i}" target="#{inwardReportControllerBht.patientEncounter}" />
+                                    </h:commandLink>
+                                    <h:outputLabel value="#{i.bhtNo}" rendered="#{!webUserController.hasPrivilege('Developers')}" >
+                                    </h:outputLabel>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:panel>
+                </h:form>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/inward/inward_reports.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                >
+
+    <ui:define name="subcontent">
+        <h:form>
+            <p:panel header="Report By Bill" style="height: 100vh">
+                
+                <h:panelGrid columns="8" class="my-4">                    
+                    <h:outputLabel value="From"/>
+                    <p:calendar styleClass="dateTimePicker mx-4" id="fromDate" value="#{mdInwardReportController.fromDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                        <f:ajax event="dateSelect"   render="tbl" execute="@this toDate" listener="#{mdInwardReportController.makeBillNull}"/>
+                    </p:calendar>
+                    <h:outputLabel value="To"/>
+                    <p:calendar styleClass="mx-4" id="toDate" value="#{mdInwardReportController.toDate}" navigator="false" pattern="#{sessionController.applicationPreference.longDateTimeFormat}" >
+                        <f:ajax event="dateSelect"   render="tbl" execute="@this fromDate" listener="#{mdInwardReportController.makeBillNull}"/>
+                    </p:calendar>
+                    <p:commandButton ajax="false"
+                                     value="Process By Added Date" 
+                                     icon="fas fa-cogs"
+                                     class=" ui-button-warning"
+                                     action="#{mdInwardReportController.createServiceBillsByAddedDate}"
+                                     /><br/>
+                    <p:commandButton ajax="false" 
+                                     icon="fas fa-cogs"
+                                     value="Process By Discharge Date" 
+                                     class="my-2 ui-button-warning"
+                                     action="#{mdInwardReportController.createServiceBillsByDischargeDate()}"
+                                     />
+                </h:panelGrid>
+                
+                <p:dataTable id="tbl" 
+                             value="#{mdInwardReportController.bills}"
+                             rowIndexVar="i"
+                             var="bill"
+                             filteredValue="#{mdInwardReportController.fillterBill}"
+                             sortBy="#{bill.institution.id}"
+                             rows="50"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="20,50,100">
+                    
+                    <p:column headerText="Serial No">
+                        #{i+1}
+                    </p:column>
+                    <p:column headerText="Institution" filterBy="#{bill.toInstitution.name}" filterMatchMode="contains">
+                        #{bill.toInstitution.name}
+                    </p:column>
+                    <p:column headerText="Department" filterBy="#{bill.toDepartment.name}" filterMatchMode="contains">
+                        #{bill.toDepartment.name}
+                    </p:column>                   
+                    <p:column headerText="Cancelled/Refunded" filterBy="#{bill.class}" filterMatchMode="contains" >                        
+                        <p:outputLabel value="Refunded" rendered="#{bill.class eq 'class com.divudi.entity.RefundBill'}"/>
+                        <p:outputLabel value="Cancelled" rendered="#{bill.class eq 'class com.divudi.entity.CancelledBill'}"/>
+                    </p:column>
+                    <p:column headerText="Bill No" filterBy="#{bill.insId}" filterMatchMode="contains" >                        
+                        #{bill.insId}
+                    </p:column>
+                    <p:column headerText="Name" filterBy="#{bill.patient.person.name}" filterMatchMode="contains">
+                        #{bill.patient.person.name}
+                    </p:column>
+                    <p:column styleClass="averageNumericColumn" headerText="Hospital Fee">
+                        <h:outputLabel  value="#{bill.hospitalFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column styleClass="averageNumericColumn" headerText="Professional Fee">
+                        <h:outputLabel value="#{bill.professionalFee}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:column styleClass="averageNumericColumn" headerText="Total">
+                        <h:outputLabel  value="#{bill.netTotal}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputLabel>
+                    </p:column>
+                    <p:columnGroup type="footer">
+                        <p:row>
+                            <p:column colspan="6">
+                                <f:facet name="footer">
+                                    Total
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="footer">
+                                    <h:outputLabel style="text-align: right;" value="#{mdInwardReportController.hospitalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="footer">
+                                    <h:outputLabel style="text-align: right;" value="#{mdInwardReportController.professionalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="footer">
+                                    <h:outputLabel style="text-align: right;" value="#{mdInwardReportController.professionalTotal+mdInwardReportController.hospitalTotal}">
+                                        <f:convertNumber pattern="#,##0.00" />
+                                    </h:outputLabel>
+                                </f:facet>
+                            </p:column>
+                        </p:row>
+                    </p:columnGroup>
+                </p:dataTable>
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+
+
+
+</ui:composition>

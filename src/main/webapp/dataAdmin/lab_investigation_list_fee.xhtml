@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/dataAdmin/report_entered_data.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                
+                >
+
+    <ui:define name="subcontent">
+
+        <h:panelGroup >
+            <h:form id="form"  >
+                <p:growl />
+                <p:panel id="panIx"  >
+
+                    <f:facet name="header" >
+                        <h:outputLabel value="List of Investigations"></h:outputLabel>
+                        <p:commandButton ajax="false" value="Print" styleClass="noPrintButton" >
+                            <p:printer target="panIx" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Excel" ajax="false" >
+                            <p:dataExporter type="xlsx" target="tbl" fileName="DepartmentIncome"
+                                           
+                                                
+                                           />
+                        </p:commandButton>
+
+                    </f:facet>
+
+                    <p:dataTable id="tbl" rowIndexVar="rowIndex" value="#{investigationController.itemFee}" var="ix"  >
+
+                        <f:facet name="header">
+                            <h:outputLabel  value="Lab Investigation Fee list " />
+                        </f:facet>
+
+                        <p:column headerText="No." >                            
+                            <f:facet name="header">
+                                <h:outputLabel value="No"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{rowIndex + 1}" ></h:outputLabel>
+                        </p:column>  
+
+                        <p:column headerText="Investigation Name"  sortBy="#{ix.item.name}" filterBy="#{ix.item.name}">
+                            <f:facet name="header">
+                                <h:outputLabel value="Investigation Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.name}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Status"  sortBy="#{ix.item.inactive}" filterBy="#{ix.item.inactive}">
+                            <f:facet name="header">
+                                <h:outputLabel value="Status"/>    
+                            </f:facet>
+                            <!--<h:outputLabel value="#{ix.item.inactive}" ></h:outputLabel>-->
+                            <h:outputLabel  value="Active" style="color: green;" rendered="#{!ix.item.inactive}"/>
+                                    <h:outputLabel  value="Inactive" style="color: red;" rendered="#{ix.item.inactive}"/>
+                        </p:column>
+
+                        <p:column headerText="Institution Name" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Institution Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.institution.name}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Department Name" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Department Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.department.name}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Item Institution Name" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Item Institution Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.institution.name}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Item Department Name" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Item Department Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.department.name}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Item Category Name" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Item Category Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.category.name}" ></h:outputLabel>
+                        </p:column>
+                        
+                        <p:column headerText="Inward Charge Category" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Item Category Name"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.inwardChargeType.label}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Hospiatal Fee" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Hospital Fee"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.fee}" rendered="#{ix.feeType=='OwnInstitution'}" ></h:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Staff Fee" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Staff Fee"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.fee}" rendered="#{ix.feeType=='Staff'}" ></h:outputLabel>
+                        </p:column>
+                        <p:column headerText="Regent Fee" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Regent Fee"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.fee}" rendered="#{ix.feeType=='Chemical'}" ></h:outputLabel>
+                        </p:column>
+                        <p:column headerText="Collecting Center Fee" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Collecting Center Fee"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.fee}" rendered="#{ix.feeType=='CollectingCentre'}" ></h:outputLabel>
+                        </p:column>
+                        <p:column headerText="Total" >
+                            <f:facet name="header">
+                                <h:outputLabel value="Total"/>    
+                            </f:facet>
+                            <h:outputLabel value="#{ix.item.total}"></h:outputLabel>
+                        </p:column>
+                    </p:dataTable>
+
+
+                </p:panel>
+            </h:form>
+
+        </h:panelGroup>
+
+        <h:form>
+
+
+
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

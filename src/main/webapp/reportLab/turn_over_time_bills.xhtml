@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/reportLab/lab_summeries_index.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                
+                xmlns:autocomplete="http://java.sun.com/jsf/composite/autocomplete">
+
+
+    <ui:define name="subcontent">
+        <h:outputStylesheet library="css" name="printing.css"></h:outputStylesheet>
+        <h:panelGroup rendered="true" >
+            <h:form>
+
+
+                <p:panel id="panelPrint"  
+                         header="Turn Around Time">
+
+                    <h:panelGrid columns="2" style="min-width: 50%;" styleClass="noPrintButton">
+                        <h:outputLabel value="From"/>
+                        <p:calendar id="frmDate" styleClass="dateTimePicker" navigator="true" value="#{investigationMonthSummeryOwnControllerSession.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                        </p:calendar>
+
+                        <h:outputLabel value="To"/>
+                        <p:calendar id="toDate" styleClass="dateTimePicker"  navigator="true" value="#{investigationMonthSummeryOwnControllerSession.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                        </p:calendar>
+                        <h:outputLabel value="Department"/>
+                        <autocomplete:department value="#{investigationMonthSummeryOwnControllerSession.department}" ></autocomplete:department>
+                        <h:outputLabel value="Item"/>
+                        <p:autoComplete widgetVar="aPt" id="acPt" forceSelection="true" converter="ixcon"
+                                        value="#{investigationMonthSummeryOwnControllerSession.item}" 
+                                        completeMethod="#{investigationController.completeInvest}" 
+                                        var="apt" itemLabel="#{apt.name}" 
+                                        itemValue="#{apt}" size="30"  style="width: 400px;">
+                            <p:column>
+                                #{apt.name}
+                            </p:column>
+                            <p:column>
+                                #{apt.fullName}
+                            </p:column>
+                            <p:column>
+                                #{apt.department.name}
+                            </p:column>
+
+                        </p:autoComplete>
+                        <p:watermark for="acPt" value="Item"/>
+                        <h:panelGroup >
+                            <p:commandButton ajax="false"  value="Process"  
+                                             action="#{investigationMonthSummeryOwnControllerSession.createInvestigationTurnoverTimeByBills}"
+                                             styleClass="noPrintButton" />
+                            <p:commandButton value="Excel" ajax="false" styleClass="noPrintButton" >
+                                <p:dataExporter type="xlsx" target="tbl" fileName="turn over time"/>
+                            </p:commandButton>
+                            <p:commandButton value="Print" ajax="false" styleClass="noPrintButton" >
+                                <p:printer target="tbl" ></p:printer>
+                            </p:commandButton>
+                            <p:commandButton value="Back" ajax="false" styleClass="noPrintButton" action="/reportLab/lab_summeries_index" >
+                            </p:commandButton> 
+                        </h:panelGroup>
+                    </h:panelGrid>
+
+                    <p:panel style="width: 100%; margin-top: 20px;" styleClass="noBorder summeryBorder">
+
+
+                        <p:dataTable id="tbl" value="#{investigationMonthSummeryOwnControllerSession.pis}" var="pi" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Turn Around Time" />
+                            </f:facet>
+                            <p:column headerText="Ins Id" >
+                                <p:outputLabel value="#{pi.billItem.bill.insId}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Dept Id" >
+                                <p:outputLabel value="#{pi.billItem.bill.deptId}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Bill Type" >
+                                <p:outputLabel value="#{pi.billItem.bill.billType}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Billed at" >
+                                <p:outputLabel value="#{pi.billItem.bill.fromDepartment.name}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Done at" >
+                                <p:outputLabel value="#{pi.billItem.bill.toDepartment.name}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Test" sortBy="#{pi.billItem.item.name}" >
+                                <p:outputLabel value="#{pi.billItem.item.name}" ></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Colleted At" >
+                                <p:outputLabel value="#{pi.sampledAt}" >
+                                    <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Approved At" >
+                                <p:outputLabel value="#{pi.approveAt}" >
+                                    <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                </p:outputLabel>
+                            </p:column>
+                            <!--                            <p:column headerText="Printed At" >
+                                                            <p:outputLabel value="#{pi.printingAt}" >
+                                                                <f:convertDateTime  timeZone="Asia/Colombo" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></f:convertDateTime>
+                                                            </p:outputLabel>
+                                                        </p:column>-->
+                            <p:column headerText="Turn Around time" >
+                                <h:panelGroup rendered="#{pi.approveAt ne null}" >
+                                    <p:outputLabel value="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt)}" rendered="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt) lt 60}" >
+                                        <f:convertNumber pattern="0" ></f:convertNumber>
+                                    </p:outputLabel>
+                                    <p:outputLabel value=" minutes" rendered="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt) lt 60}" >
+                                    </p:outputLabel>
+                                    <p:outputLabel value="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt)/60}" rendered="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt) gt 60}" >
+                                        <f:convertNumber pattern="0.0" ></f:convertNumber>
+                                    </p:outputLabel>
+                                    <p:outputLabel value=" hours" rendered="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt) gt 60}" >
+                                    </p:outputLabel>
+                                    <p:outputLabel value="One Hour" rendered="#{commonController.dateDifferenceInMinutes(pi.sampledAt, pi.approveAt) eq 60}" >
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                            </p:column>
+
+
+                        </p:dataTable>
+
+                    </p:panel>
+
+
+
+                </p:panel>        
+            </h:form>
+        </h:panelGroup>
+    </ui:define>
+
+</ui:composition>

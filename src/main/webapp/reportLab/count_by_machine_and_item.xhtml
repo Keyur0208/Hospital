@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/reportLab/report_lab.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                >
+
+
+    <ui:define name="subcontent">
+        <h:outputStylesheet library="css" name="printing.css"></h:outputStylesheet>
+
+        <h:panelGroup rendered="true" >
+            <h:form>
+                <p:panel id="panelPrint" styleClass="noBorder summeryBorder">
+                    <f:facet name="header" >
+                        <p:outputLabel value="3) Investigation Counts"/>
+
+                        <h:panelGrid columns="2"  styleClass="noPrintButton">
+                            <h:outputLabel value="From Date"/>
+                            <p:calendar id="frmDate" value="#{investigationMonthSummeryOwnController.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                            </p:calendar>
+                            <h:outputLabel value="To Date"/>
+                            <p:calendar id="toDate" value="#{investigationMonthSummeryOwnController.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                            </p:calendar>
+                            <h:outputLabel  value="Institution"  ></h:outputLabel>
+                            <p:autoComplete  value="#{investigationMonthSummeryOwnController.institution}" 
+                                             completeMethod="#{institutionController.completeIns}" 
+                                             var="dept" itemValue="#{dept}" itemLabel="#{dept.name}" forceSelection="true" rendered="true" requiredMessage="You must select a department" >
+                            </p:autoComplete>
+                        </h:panelGrid>
+                        <h:panelGrid columns="5"  styleClass="noPrintButton">
+                            <p:spacer width="70" height="1"/>
+                            <p:commandButton ajax="false"  value="Refresh" 
+                                             action="#{investigationMonthSummeryOwnController.createLabServiceWithCountByMachineAndBillType() }"
+                                             styleClass="noPrintButton" style="float: right;" />
+                            <p:commandButton ajax="false"  value="Refresh new" 
+                                             action="#{investigationMonthSummeryOwnController.createLabServiceWithCountAndValueByMachineInvestigationAndBillType() }"
+                                             styleClass="noPrintButton" style="float: right;" />
+
+
+
+                            <p:commandButton ajax="false" value="Print" styleClass="noPrintButton" style="float:right;">
+                                <p:printer target="panelPrint" />
+                            </p:commandButton>
+
+                            <p:commandButton value="Excel" ajax="false" styleClass="noPrintButton" style="float: right;" actionListener="#{investigationMonthSummeryOwnController.createLabServiceWithCountByMachineAndBillType()}" >
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Investigation Counts From #{investigationMonthSummeryOwnController.fromDate} To #{investigationMonthSummeryOwnController.toDate}"
+                                               />
+                            </p:commandButton>      
+
+
+
+                        </h:panelGrid>
+                    </f:facet>
+                    <p:dataTable id="tbl" 
+                                 value="#{investigationMonthSummeryOwnController.investigationCountWithMachines}" 
+                                 var="c" >
+
+                        <f:facet name="header">
+                            <h:outputLabel value="Investigation Count With Machine(By Item)"/>
+                            <h:outputLabel value="#{investigationMonthSummeryOwnController.institution.name}" style="white-space: pre-line"/>
+                            <h:outputLabel value="From " style="white-space: pre-line"/>
+                            <h:outputLabel value="#{investigationMonthSummeryOwnController.fromDate}">
+                                <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                            </h:outputLabel>
+                            <h:outputLabel value=" &emsp;&emsp;To "/>
+                            <h:outputLabel value="#{investigationMonthSummeryOwnController.toDate}">
+                                <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                            </h:outputLabel>
+
+                        </f:facet>
+
+
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column rowspan="2" headerText="Investigation" />
+                                <p:column colspan="8" headerText="Counts &amp; Totals" />
+                            </p:row>
+                            <p:row>
+                                <p:column headerText="OPD Count" />
+                                <p:column headerText="OPD Value" />
+                                <p:column headerText="CC Count" />
+                                <p:column headerText="CC Value" />
+                                <p:column headerText="Inward Count" />
+                                <p:column headerText="Inward Value" />
+                                <p:column headerText="Total Count" />
+                                <p:column headerText="Total Value" />
+                            </p:row>
+                        </p:columnGroup>
+
+                        <p:subTable var="stats" value="#{c.listOfInvestigationCounts}">
+                            <f:facet name="header">
+                                <h:outputText value="#{c.machine.name}" />
+                            </f:facet>
+                            <p:column>
+                                <h:outputText value="#{stats.investigation.name}" />
+                            </p:column>
+                            <p:column style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.opdCount}" >
+                                    <f:convertNumber pattern="#,##0" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.opdTotal}" >
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.ccCount}" >
+                                    <f:convertNumber pattern="#,##0" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.ccTotal}" >
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.inwardCount}" >
+                                    <f:convertNumber pattern="#,##0" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.inwardTotal}" >
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column  style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.count}" >
+                                    <f:convertNumber pattern="#,##0" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column style="width: 100px!important; text-align: right;">
+                                <h:outputText value="#{stats.total}" >
+                                    <f:convertNumber pattern="#,##0.00" />
+                                </h:outputText>
+                            </p:column>
+                            <p:columnGroup type="footer">
+                                <p:row>
+                                    <p:column footerText="#{c.machine.name} Total" style="text-align:right"/>
+                                    <p:column footerText="#{c.opdCount}"  style="text-align:right">
+                                        <h:outputText value="#{c.opdCount}" >
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column footerText="#{c.opdTotal}"  style="text-align:right">
+                                        <f:facet name="footer" >
+                                            <h:outputText value="#{c.opdTotal}" >
+                                                <f:convertNumber pattern="#,##0.00" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column footerText="#{c.ccCount}"  style="text-align:right">
+                                        <h:outputText value="#{c.ccCount}" >
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column footerText="#{c.ccTotal}"  style="text-align:right">
+                                        <f:facet name="footer" >
+                                            <h:outputText value="#{c.ccTotal}" >
+                                                <f:convertNumber pattern="#,##0.00" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column footerText="#{c.inwardCount}"  style="text-align:right">
+                                        <h:outputText value="#{c.inwardCount}" >
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column  style="text-align:right">
+                                        <f:facet name="footer" >
+                                            <h:outputText value="#{c.inwardTotal}" >
+                                                <f:convertNumber pattern="#,##0.00" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column footerText="#{c.count}"  style="text-align:right">
+                                        <h:outputText value="#{c.count}" >
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column footerText="#{c.total}"  style="text-align:right">
+                                        <f:facet name="footer" >
+                                            <h:outputText value="#{c.total}" >
+                                                <f:convertNumber pattern="#,##0.00" />
+                                            </h:outputText>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:subTable>                        
+
+                        <p:columnGroup type="footer">  
+                            <p:row>                              
+                                <p:column footerText="Total"/>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalOpdCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalOpdCount}">
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalOpdCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalOpd}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalccCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalccCount}">
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalccCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalcc}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalInwardCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalInwardCount}">
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalInwardCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalInward}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.totalCount}">
+                                            <f:convertNumber pattern="#,##0" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>                             
+                                <p:column footerText="#{investigationMonthSummeryOwnController.totalCount}"  style="text-align:right">
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{investigationMonthSummeryOwnController.total}">
+                                            <f:convertNumber pattern="#,##0.00" />
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>                             
+                            </p:row>  
+                        </p:columnGroup> 
+                        <f:facet name="footer" >
+                            <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                        </f:facet>
+
+                    </p:dataTable>
+
+
+
+
+                </p:panel>        
+            </h:form>
+        </h:panelGroup>
+    </ui:define>
+
+</ui:composition>

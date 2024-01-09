@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/channel/channel_reports.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ch="http://java.sun.com/jsf/composite/channel"
+                xmlns:au="http://java.sun.com/jsf/composite/autocomplete"
+                >
+
+    <ui:define name="subContent">
+
+        <h:form>
+
+            <p:panel>
+                <f:facet name="header">
+                    <p:outputLabel value="Staff Bokking Summery Report" />
+                    
+                </f:facet>
+
+                <p:panel>
+                    <p:panelGrid columns="2" >
+                        <h:outputLabel value="From Date"/>
+                        <p:calendar value="#{channelReportController.fromDate}" navigator="true" pattern="dd MMMM yyyy HH:mm:ss"  >
+                        </p:calendar>
+                        <h:outputLabel value="To Date"/>
+                        <p:calendar value="#{channelReportController.toDate}" navigator="true" pattern="dd MMMM yyyy HH:mm:ss" >
+                        </p:calendar>
+                        <h:outputLabel value="Staff" />
+                        <au:completeStaffChannel value="#{channelReportController.staff}" />
+                        <h:outputLabel value="Paid Only"/> 
+                        <p:selectBooleanCheckbox value="#{channelReportController.paid}" />
+                        <h:outputLabel value="By Created Date"/> 
+                        <p:selectBooleanCheckbox value="#{channelReportController.sessoinDate}" />
+                    </p:panelGrid>
+                    <h:panelGrid columns="3" class="my-2">
+                        <p:commandButton action="#{channelReportController.createStaffBookingTable}" value="Process" ajax="false" />
+                        <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton" style="float: right; margin-right: 10px; margin-left: 10px" >
+                            <p:dataExporter type="xlsx" target="tbl1" fileName="channel_report_staff_booking_detail"  />
+                        </p:commandButton>
+                        <p:commandButton ajax="false" value="Print" styleClass="noPrintButton">
+                            <p:printer target="reportPrint"  />
+                        </p:commandButton> 
+                    </h:panelGrid>
+                </p:panel>
+                <p:panel id="reportPrint" styleClass="noBorder summeryBorder">
+                    <p:dataTable value="#{channelReportController.channelBills}" var="b" id="tbl1" >
+                        <f:facet name="header">
+                            <p:outputLabel value="#{sessionController.loggedUser.institution.name}" />
+                            <br></br>
+                            <p:outputLabel value="Staff Bokking Summery Report" />
+                            <br></br>
+                            <p:outputLabel value="From : " />
+                            <p:outputLabel class="ml-2" value="#{channelReportController.fromDate}" >
+                                <f:convertDateTime pattern="dd MMMM yyyy HH:mm:ss" />
+                            </p:outputLabel>
+                            <p:outputLabel class="ml-5" value="  To : " />
+                            <p:outputLabel class="ml-2" value="#{channelReportController.toDate}" >
+                                <f:convertDateTime pattern="dd MMMM yyyy HH:mm:ss" />
+                            </p:outputLabel>
+                        </f:facet>
+
+                        <p:column style="text-align: left;" rendered="#{webUserController.hasPrivilege('Developers')}" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Appoinment Date" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.singleBillSession.sessionDate}" >
+                                <f:convertDateTime  timeZone="Asia/Colombo" pattern="dd MMM yyyy" ></f:convertDateTime>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column style="text-align: left;" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Crteated Date" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.createdAt}" >
+                                <f:convertDateTime pattern="dd MMM yyyy HH:mm:ss"></f:convertDateTime>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header" >
+                                <p:outputLabel value="Bill No" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.insId}" />
+                        </p:column>
+                        <p:column rendered="#{channelReportController.paid}">
+                            <f:facet name="header" >
+                                <p:outputLabel value="Paid Bill No" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.paidBill.insId}" />
+                        </p:column>
+                        <p:column style="text-align: right;" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Patient Name" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.patient.person.nameWithTitle}" >
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column style="text-align: right;" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Cunsultant Name" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.staff.person.nameWithTitle}" >
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column style="text-align: right;" >
+                            <f:facet name="header" >
+                                <p:outputLabel value="Total Fee" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.netTotal}" >
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header" >
+                                <p:outputLabel value="Staff" />
+                            </f:facet>
+                            <p:outputLabel value="#{b.toStaff.person.name}" >
+                            </p:outputLabel>
+                        </p:column>
+                        
+
+                    </p:dataTable>
+                </p:panel>
+
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+
+
+</ui:composition>

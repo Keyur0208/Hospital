@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+
+        <ui:composition template="/pharmacy/pharmacy_summery_index.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+
+                    <p:panel header="BHT Pharmacy Issue Report" >
+
+                        <h:panelGrid columns="4" class="w-100">
+                            <h:outputLabel value="From" ></h:outputLabel>
+                            <p:calendar class="mx-2" value="#{reportsTransfer.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                            <h:outputLabel value="To" ></h:outputLabel>
+                            <p:calendar class="mx-2" value="#{reportsTransfer.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                            <h:outputLabel value="BHT Issue From" ></h:outputLabel>
+                            <p:autoComplete completeMethod="#{departmentController.completeDept}" var="dept" 
+                                            itemLabel="#{dept.name}" itemValue="#{dept}" forceSelection="true" 
+                                            value="#{reportsTransfer.fromDepartment}" 
+                                            class="mx-2">
+                            </p:autoComplete>
+                             <h:outputLabel value="Item" ></h:outputLabel>
+                            <p:autoComplete id="exItem" value="#{reportsTransfer.item}"
+                                            forceSelection="true"
+                                            completeMethod="#{itemController.completeAmpItem}" var="vt"
+                                            itemLabel="#{vt.name}" itemValue="#{vt}" 
+                                            class="mx-2">
+                                <p:column headerText="Item" >
+                                    <h:outputLabel value="#{vt.name}"></h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Code" >
+                                    <h:outputLabel value="#{vt.code}"></h:outputLabel>
+                                </p:column>                         
+                            </p:autoComplete>
+                            
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="3" class="my-2">
+                            <p:commandButton 
+                                ajax="false" 
+                                value="Fill" 
+                                icon="fas fa-fill"
+                                class="ui-button-warning"
+                                action="#{reportsTransfer.fillDepartmentBHTIssueByBillItems}" ></p:commandButton>
+                                <p:commandButton 
+                                    ajax="false" 
+                                    value="Excel"
+                                icon="fas fa-file-excel"
+                                class="ui-button-success mx-2">
+                                    <p:dataExporter type="xlsx" target="tbl" fileName="BHT_Pharmacy_Issue_Report"  />
+                                </p:commandButton>
+                            <p:commandButton 
+                                value="Print" 
+                                ajax="false" 
+                                icon="fas fa-print"
+                                class="ui-button-info"
+                                action="#">
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+
+                              
+                        </h:panelGrid>
+
+
+                        <h:panelGroup id="gpBillPreview">
+                            <p:dataTable id="tbl" styleClass="noBorder normalFont"
+                                         value="#{reportsTransfer.transferItems}" var="i" 
+                                         rowIndexVar="n">
+                                <f:facet name="header">
+                                    <h:outputLabel value="BHT Issue From"/>&#13;&nbsp;  
+                                    <h:outputLabel value="#{reportsTransfer.fromDepartment.name}"/> 
+                                   &#13;&nbsp;
+                                  
+                                        <h:outputLabel value="From  "/>
+                                        <h:outputLabel class="mx-2" value="#{reportsTransfer.fromDate}">
+                                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}" ></f:convertDateTime>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="To  "/>
+                                        <h:outputLabel class="mx-2" value="#{reportsTransfer.toDate}">
+                                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}" ></f:convertDateTime>
+                                        </h:outputLabel>
+                                    <!--</h:panelGrid>-->
+                                </f:facet>
+                                <p:column>
+                                    #{n+1}
+                                </p:column>
+                                
+                                <p:column headerText="BHT No">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="BHT No"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.bill.patientEncounter.bhtNo}" ></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Bill No">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Bill No"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.bill.deptId}" ></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Cancelled No">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Cancelled No"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.bill.cancelledBill.deptId}" ></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Item Name">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Item Name"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.item.name}" ></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Deleted" rendered="false">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Deleted"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.retired}" ></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Date">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Date"/>
+                                    </f:facet>                                    
+                                    <h:outputLabel value="#{i.createdAt}"  >
+                                        <f:convertDateTime pattern="#{sessionController.applicationPreference.shortDateFormat}" ></f:convertDateTime>
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Gross Value" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Gross Value"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.grossValue}"  >
+                                        <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                    </h:outputLabel>  
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{reportsTransfer.totalsValue}" >
+                                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column headerText="Margin Value" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Margin Value"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.marginValue}"  >
+                                        <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                    </h:outputLabel> 
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{reportsTransfer.marginValue}" >
+                                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+                                <p:column headerText="Discount Value" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Discount Value"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.discount}"  >
+                                        <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                    </h:outputLabel>  
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{reportsTransfer.discountsValue}" >
+                                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+
+                                <p:column headerText="Net Value" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Net Value"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.netValue}"  >
+                                        <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                    </h:outputLabel>     
+                                    <f:facet name="footer">
+                                        <h:outputLabel value="#{reportsTransfer.netTotalValues}" >
+                                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                                        </h:outputLabel>
+                                    </f:facet>
+                                </p:column>
+
+
+
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:panel>
+                </h:form>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

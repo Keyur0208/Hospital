@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/resources/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:au="http://java.sun.com/jsf/composite/autocomplete">
+
+    <ui:define name="content">
+        <h:form>
+            <p:panel header="Leave Application Form">
+                <h:panelGrid columns="3" styleClass="alignTop" >
+                    <p:panel header="Leave Form Details">
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Form Number"/>
+                            <p:inputText value="#{staffLeaveApplicationFormController.currentLeaveForm.code}"/>
+                            <h:outputLabel value="Staff : "/>
+                            <au:completeStaff value="#{staffLeaveApplicationFormController.currentLeaveForm.staff}"/>
+                            <h:outputLabel value="Leave Type"/>
+                            <p:selectOneMenu  value="#{staffLeaveApplicationFormController.currentLeaveForm.leaveType}">
+                                <f:selectItem itemLabel="Select Day Type"/>
+                                <f:selectItems value="#{enumController.leaveType}"/>                                
+                            </p:selectOneMenu>                                                    
+                            <h:outputLabel value="From Date"/>
+                            <p:calendar id="frmDate" value="#{staffLeaveApplicationFormController.currentLeaveForm.fromDate}"
+                                        pattern="dd MM yy">     
+                            </p:calendar>   
+                            <h:outputLabel value="To Date"/>
+                            <p:calendar id="toDate" value="#{staffLeaveApplicationFormController.currentLeaveForm.toDate}"
+                                        pattern="dd MM yy">
+                            </p:calendar>   
+                            <p:commandButton ajax="false" value="Leave Count" action="#{staffLeaveApplicationFormController.calLeaveCount()}"/>
+                            <h:panelGrid columns="3">
+                                <h:outputLabel value="Leave Entitle || "/>
+                                <h:outputLabel value="Leave Utilized || "/>
+                                <h:outputLabel value="Ballance"/>
+                                <h:outputLabel value="#{staffLeaveApplicationFormController.leaveEntitle}"/>
+                                <h:outputLabel value="#{staffLeaveApplicationFormController.leaved}"/>
+                                <h:outputLabel value="#{staffLeaveApplicationFormController.leaveEntitle - staffLeaveApplicationFormController.leaved}"/>
+                            </h:panelGrid>
+                            <p:commandButton ajax="false" value="Process  Shift" 
+                                            action="#{staffLeaveApplicationFormController.fetchStaffShift()}" />
+                            <p:dataTable value="#{staffLeaveApplicationFormController.staffShifts}" var="l">
+                                <p:column>
+                                    #{l.shift.name}
+                                </p:column>
+                                <p:column>
+                                    #{l.shiftStartTime}
+                                </p:column>
+                                <p:column>
+                                    #{l.shiftEndTime}
+                                </p:column>
+                            </p:dataTable>
+
+                            <p:commandButton ajax="false" value="Process Lie Shift" 
+                                            action="#{staffLeaveApplicationFormController.fetchStaffShiftLie()}" />
+                            <p:selectOneMenu id="s1"
+                                             var="t"
+                                             value="#{staffLeaveApplicationFormController.currentLeaveForm.staffShift}">
+                                <f:selectItem itemLabel="Select Staff Shift"/>
+                                <f:selectItems value="#{staffLeaveApplicationFormController.staffShiftsLie}"
+                                               var="itm" itemLabel="#{itm.shift.name}" 
+                                               itemValue="#{itm}" />
+                                <p:column  headerText="Shift Date">
+                                    <h:outputLabel value="#{t.shiftDate}">
+                                        <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateFormat}"/>
+                                    </h:outputLabel>
+                                </p:column>
+                                <p:column headerText="Shift Name">
+                                    <h:outputLabel value="#{t.shift.name}"/>
+                                </p:column>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Requested Date"/>
+                            <p:calendar id="requestedDate" value="#{staffLeaveApplicationFormController.currentLeaveForm.requestedDate}"
+                                        pattern="dd MM yy">
+                            </p:calendar>
+                            <h:outputLabel value="Leave Approved Person"/>
+                            <au:completeStaff value="#{staffLeaveApplicationFormController.currentLeaveForm.approvedStaff}"/>                            
+                            <h:outputLabel value="Leave Approved Date"/>
+                            <p:calendar id="approvedDate" value="#{staffLeaveApplicationFormController.currentLeaveForm.approvedAt}"
+                                        pattern="dd MM yy" >
+                            </p:calendar>
+                            <h:outputLabel value="Comment"/>
+                            <p:inputTextarea value="#{staffLeaveApplicationFormController.currentLeaveForm.comments}" />
+
+                            <h:panelGroup>
+                                <p:commandButton id="btnAdd" ajax="false" value="Save" 
+                                                 disabled="#{staffLeaveApplicationFormController.currentLeaveForm.id ne null}"
+                                                action="#{staffLeaveApplicationFormController.saveLeaveform()}"/>
+
+                                <p:commandButton ajax="false" value="Clear" 
+                                                action="#{staffLeaveApplicationFormController.clear}"/>
+                                <p:commandButton ajax="false" value="Delete" 
+                                                action="#{staffLeaveApplicationFormController.deleteLeaveForm()}"/>
+                                <p:inputText id="recomment" value="#{staffLeaveApplicationFormController.currentLeaveForm.retireComments}"/>
+                                <p:watermark for="recomment" value="Comment"/>
+
+                            </h:panelGroup>                     
+                        </h:panelGrid>
+                    </p:panel> 
+                    <p:panel header="Search Leave Forms" >
+                        <p:panel>
+                            <p:panelGrid columns="2" >
+                                <h:outputLabel value="From Date"/>
+                                <p:calendar value="#{staffLeaveApplicationFormController.fromDate}"
+                                            pattern="dd MM yy">     
+                                </p:calendar>   
+                                <h:outputLabel value="To Date"/>
+                                <p:calendar value="#{staffLeaveApplicationFormController.toDate}"
+                                            pattern="dd MM yy">
+                                </p:calendar> 
+                                <h:outputLabel value="Staff : "/>
+                                <au:completeStaff value="#{staffLeaveApplicationFormController.staff}"/>                               
+                                <h:outputLabel value="Leave Type"/>
+                                <p:selectOneMenu  value="#{staffLeaveApplicationFormController.leaveType}">
+                                    <f:selectItem itemLabel="Select Day Type"/>
+                                    <f:selectItems value="#{enumController.leaveType}"/>
+                                </p:selectOneMenu> 
+                                <h:outputLabel value="Leave Approved Person"/>
+                                <au:completeStaff value="#{staffLeaveApplicationFormController.approvedStaff}"/>            
+                                <h:outputLabel value="With Out Cancel"/>
+                                <p:selectBooleanCheckbox value="#{staffLeaveApplicationFormController.withOutretRierd}"
+                                                         itemLabel="With Out Cancel"/>
+                                <p:commandButton value="Search Created Date" ajax="false" action="#{staffLeaveApplicationFormController.createleaveTable()}" />
+                                <p:commandButton value="Search Approved Date" ajax="false" action="#{staffLeaveApplicationFormController.createleaveTableApprovedDate()}" />
+                                <p:commandButton value="Search Shift Date" ajax="false" action="#{staffLeaveApplicationFormController.createleaveTableShiftDate()}" />
+                                <p:commandButton value="Go to Leave Entitle" ajax="false" action="hr_staff_leave_entitle" />
+                            </p:panelGrid>
+                        </p:panel>
+                        <p:panel>
+                            <p:dataTable value="#{staffLeaveApplicationFormController.leaveForms}" var="l" 
+                                         rowStyleClass="#{l.retired eq true ? 'redText':''}"
+                                         scrollable="true"
+                                         scrollHeight="300" >
+                                <p:column headerText="View" >
+                                    <p:commandButton ajax="false" value="View" action="#{staffLeaveApplicationFormController.viewLeaveForm(l)}" disabled="#{l.retired}"></p:commandButton>
+                                </p:column>
+                                <p:column headerText="id">
+                                    <p:outputLabel value="#{l.id}" ></p:outputLabel>
+                                </p:column>                               
+                                   <p:column headerText="code">
+                                    <p:outputLabel value="#{l.code}" ></p:outputLabel>
+                                </p:column>                               
+                                <p:column headerText="Staff">
+                                    <p:outputLabel value="#{l.staff.person.nameWithTitle}" ></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="From">
+                                    <p:outputLabel value="#{l.fromDate}" >
+                                        <f:convertDateTime pattern="yyyy MM dd HH:mm:ss" />
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="To">
+                                    <p:outputLabel value="#{l.toDate}" >
+                                        <f:convertDateTime pattern="yyyy MM dd HH:mm:ss" />
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Aproved By">
+                                    <p:outputLabel value="#{l.approvedStaff.person.nameWithTitle}" ></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Comment">
+                                    <p:outputLabel value="#{l.comments}" ></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Creater">
+                                    <p:outputLabel value="#{l.creater.webUserPerson.nameWithTitle}" ></p:outputLabel>
+                                    <br></br>
+                                    <p:outputLabel value="Deleted By  #{l.retirer.webUserPerson.nameWithTitle}" rendered="#{l.retired}" style="color: blue;"/>
+                                </p:column>
+                                <p:column headerText="Created AT">
+                                    <p:outputLabel value="#{l.createdAt}" ></p:outputLabel>
+
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </p:panel>
+                    <p:panel header="Links" >
+                        <h:panelGrid columns="2" >
+                            <p:commandLink ajax="false" value="Finger Print Analysis" action="/hr/hr_shift_table_finger_print_by_staff" ></p:commandLink>
+                        </h:panelGrid>
+                    </p:panel>
+                </h:panelGrid>              
+            </p:panel>
+        </h:form>
+    </ui:define> 
+
+</ui:composition>

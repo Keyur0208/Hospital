@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/resources/template/template.xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                >
+
+    <ui:define name="content">
+        <h:form>
+            <p:panel header="Holiday Report" >
+                <p:panelGrid columns="2" >
+                    <h:outputLabel value="From Time"/>
+                    <p:calendar id="requestedDate" 
+                                value="#{phDateController.frDate}"
+                                pattern="yyyy MM dd HH:mm:ss">
+                    </p:calendar> 
+                    <h:outputLabel value="To Time"/>
+                    <p:calendar id="forDate" value="#{phDateController.toDate}"
+                                pattern="yyyy MM dd HH:mm:ss" >
+                    </p:calendar> 
+                </p:panelGrid>
+
+                <p:commandButton value="Fill" action="#{phDateController.createHollydays}" ajax="false" />
+                <p:commandButton value="Print" ajax="false" action="#" >
+                    <p:printer target="gpBillPreview" ></p:printer>
+                </p:commandButton>
+                <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton"  >
+                    <p:dataExporter type="xlsx" target="tb1" fileName="hr_report_ph_date"  />
+                </p:commandButton>
+
+                <p:panel id="gpBillPreview" styleClass="noBorder summeryBorder">
+                    <p:dataTable id="tb1" value="#{phDateController.phDates}" var="ph">
+                        <f:facet name="header">
+                            <h:outputLabel value="#{sessionController.loggedUser.institution.name}" /><br></br>
+                            <h:outputLabel value="Staff Shift"/><br/>
+                            <h:outputLabel value="  From : "  />
+                            <h:outputLabel  value="#{phDateController.frDate}" >
+                                <f:convertDateTime pattern="dd MM yy "/>
+                            </h:outputLabel>
+                            <h:outputLabel/>
+                            <h:outputLabel/>
+                            <h:outputLabel value="  To : "/> 
+                            <h:outputLabel  value="#{phDateController.toDate}">
+                                <f:convertDateTime pattern="dd MM yy "/>
+                            </h:outputLabel><br/>
+                        </f:facet>
+                        <p:column headerText="Date">
+                            <f:facet name="header">
+                                <h:outputLabel value="Date"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.phDate}" >
+                                <f:convertDateTime pattern="yyyy MM dd" />
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Id">
+                            <f:facet name="header">
+                                <h:outputLabel value="Id"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.id}" >
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Hollyday Name">
+                            <f:facet name="header">
+                                <h:outputLabel value="Hollyday Name"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.name}" >
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Hollyday Type">
+                            <f:facet name="header">
+                                <h:outputLabel value="Hollyday Type"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.phType}" >
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Creater">
+                            <f:facet name="header">
+                                <h:outputLabel value="Creater"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.creater.webUserPerson.nameWithTitle}" >
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="Created At">
+                            <f:facet name="header">
+                                <h:outputLabel value="Created At"/>
+                            </f:facet>
+                            <p:outputLabel value="#{ph.createdAt}" >
+                                <f:convertDateTime pattern="yyyy MM dd HH:mm:ss" />
+                            </p:outputLabel>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:outputLabel value="Print By : #{sessionController.loggedUser.webUserPerson.name} - " />
+                            <p:outputLabel value="Print At : " />
+                            <p:outputLabel value="#{commonController.currentDateTime}" >
+                                <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a " />
+                            </p:outputLabel>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </p:panel>
+        </h:form>
+    </ui:define>
+
+
+
+</ui:composition>

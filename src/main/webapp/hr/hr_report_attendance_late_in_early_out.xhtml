@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      
+      xmlns:hr="http://java.sun.com/jsf/composite/autocomplete">
+
+    <h:body>
+
+        <ui:composition template="/resources/template/template.xhtml">
+
+            <ui:define name="content">
+                <h:form >
+                    <p:panel >
+                        <f:facet name="header" >
+                            <h:outputLabel value="Attendance Report (Late In and Early Out)" />
+                        </f:facet>
+                        <h:panelGrid columns="2" >
+                            <h:outputLabel value="From : " />
+                            <p:calendar value="#{hrReportController.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                            <h:outputLabel value="To : " />
+                            <p:calendar value="#{hrReportController.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  />
+                            <h:outputLabel value="Institution : "/>
+                            <hr:institution value="#{hrReportController.reportKeyWord.institution}"/>                           
+                            <h:outputLabel value="Department : "/>
+                            <hr:department value="#{hrReportController.reportKeyWord.department}"/>
+                            <h:outputLabel value="Employee : "/>
+                            <hr:completeStaff value="#{hrReportController.reportKeyWord.staff}"/>
+                            <h:outputLabel value="Staff Category : "/>
+                            <hr:completeStaffCategory value="#{hrReportController.reportKeyWord.staffCategory}"/>
+                            <h:outputLabel value="Designation : "/>
+                            <hr:completeDesignation value="#{hrReportController.reportKeyWord.designation}"/>
+                            <h:outputLabel value="Roster : "/>
+                            <hr:completeRoster value="#{hrReportController.reportKeyWord.roster}"/>
+                            <h:outputLabel value="Shift : "/>
+                            <hr:completeShift value="#{hrReportController.reportKeyWord.shift}"/>
+                            <h:outputLabel value="From Minute : "/>
+                            <p:inputText value="#{hrReportController.reportKeyWord.from}"/>
+                            <h:outputLabel value="To Minute : "/>
+                            <p:inputText value="#{hrReportController.reportKeyWord.to}"/>
+
+                        </h:panelGrid>
+
+                        <p:commandButton ajax="false" value="Process" action="#{hrReportController.createStaffShiftLateInEarlyOut()}"/>
+                        <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton"  >
+                            <p:dataExporter type="xlsx" target="tb1" fileName="hr_report_attendance_late_in_early_out"  />
+                        </p:commandButton>
+                        <p:commandButton value="Print" ajax="false" action="#" >
+                            <p:printer target="gpBillPreview" ></p:printer>
+                        </p:commandButton>
+                        <p:panel id="gpBillPreview"  styleClass="noBorder summeryBorder" >                    
+                            <p:dataTable id="tb1" value="#{hrReportController.staffShifts}" var="ss" rowStyleClass="#{ss.considerForLateIn eq true ? 'greenText':''}">
+                                <f:facet name="header">
+                                    
+                                    <h:outputLabel value="Attendance Report (Late In and Early Out)"/><br/>
+                                    <h:outputLabel value="  From : "  />
+                                    <h:outputLabel  value="#{hrReportController.fromDate}" >
+                                        <f:convertDateTime pattern="dd MM yy HH:mm:ss "/>
+                                    </h:outputLabel>
+                                    <h:outputLabel/>
+                                    <h:outputLabel/>
+                                    <h:outputLabel value="  To : "/> 
+                                    <h:outputLabel  value="#{hrReportController.toDate}">
+                                        <f:convertDateTime pattern="dd MM yy HH:mm:ss "/>
+                                    </h:outputLabel><br/>
+                                    <h:panelGroup rendered="#{hrReportController.reportKeyWord.institution ne null}" >
+                                        <h:outputLabel value="#{hrReportController.reportKeyWord.institution.name}" />
+                                        <br/>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{hrReportController.reportKeyWord.department ne null}" >
+                                        <h:outputLabel value="Department : #{hrReportController.reportKeyWord.department.name}"/>
+                                        <br/>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{hrReportController.reportKeyWord.staff ne null}" >
+                                        <h:outputLabel value="Staff : #{hrReportController.reportKeyWord.staff.person.name}"/>
+                                        <br/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <p:column headerText="Emp No">
+                                    <f:facet name="header">                                     
+                                        <h:outputLabel value="Emp No"  />
+                                    </f:facet>
+                                    <p:outputLabel value=" #{ss.staff.code}"></p:outputLabel>
+
+                                </p:column>
+                                <p:column headerText="Emp Name">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Emp Name"  />
+                                    </f:facet>
+                                    <p:outputLabel value="  #{ss.staff.person.nameWithTitle}"></p:outputLabel>
+
+                                </p:column>
+                                <p:column headerText="Department Name">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Department Name"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.staff.department.name}"></p:outputLabel>
+
+                                </p:column>                               
+                                <p:column headerText="In Checked ">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="In Checked"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.startRecord.recordTimeStamp}">
+                                        <f:convertDateTime pattern="dd/MM/yy hh:mm:ss a"/>
+                                    </h:outputLabel>                                     
+                                </p:column>           
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Shift In Time"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.shiftStartTime}">
+                                        <f:convertDateTime pattern="dd/MM/yy hh:mm:ss a"/>
+                                    </h:outputLabel>                                     
+                                </p:column>           
+                                <p:column headerText="Late In Minute Varified">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Late In Minute Varified"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.lateInVarified}">                                        
+                                        <f:converter converterId="longToTime"/>
+                                    </h:outputLabel>
+                                </p:column>   
+                                <p:column headerText="Out Checked ">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Out Checked"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.endRecord.recordTimeStamp}">
+                                        <f:convertDateTime pattern="dd/MM/yy hh:mm:ss a"/>
+                                    </h:outputLabel>                                     
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Shift out Time"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.shiftEndTime}">
+                                        <f:convertDateTime pattern="dd/MM/yy hh:mm:ss a"/>
+                                    </h:outputLabel>                                     
+                                </p:column>
+                                <p:column headerText="Early Out Minute Varified">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Early Out Minute Varified"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.earlyOutVarified}">                                        
+                                        <f:converter converterId="longToTime"/>
+                                    </h:outputLabel>
+                                </p:column> 
+                                <p:column headerText="Late In Minute Varified">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Late In Minute Varified"  />
+                                    </f:facet>
+                                    <h:outputLabel value="#{ss.lateInVarified}">                                        
+                                    </h:outputLabel>
+                                </p:column>
+                                <!--                                <p:column headerText="n">
+                                                                    <f:facet name="header">
+                                                                        <h:outputLabel value="n"  />
+                                                                    </f:facet>
+                                                                    <p:outputLabel value="#{ss.startRecord.recordTimeStamp}"></p:outputLabel>
+                                                                </p:column>-->
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.dayType}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.startRecord.recordTimeStamp}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="considerForLateIn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="considerForLateIn"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.considerForLateIn}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.leaveType}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.autoLeave}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="n">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="n"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.staff}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="referenceStaffShiftLateIn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="referenceStaffShiftLateIn"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.referenceStaffShiftLateIn}"></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="referenceStaffShiftEarlyOut">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="referenceStaffShiftEarlyOut"  />
+                                    </f:facet>
+                                    <p:outputLabel value="#{ss.referenceStaffShiftEarlyOut}"></p:outputLabel>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:outputLabel value="Print By : #{sessionController.loggedUser.webUserPerson.name} - " />
+                                    <p:outputLabel value="Print At : " />
+                                    <p:outputLabel value="#{commonController.currentDateTime}" >
+                                        <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a " />
+                                    </p:outputLabel>
+                                </f:facet>
+
+                            </p:dataTable>
+                        </p:panel>
+
+
+                    </p:panel>
+
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </h:body>
+</html>

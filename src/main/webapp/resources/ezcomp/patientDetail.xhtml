@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="patient" type="com.divudi.entity.Patient"  />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation >
+
+        <div class="row">
+            <div class="col-md-4 p-1">
+                <p:selectOneMenu id="cmbTitle"  placeholder="Title" class="form-control w-100">
+                    <f:selectItem itemLabel="Select Title" />
+                    <f:selectItems value="#{enumController.title}" />
+                </p:selectOneMenu>
+            </div>
+            <div class="col-md-4 p-1">
+                <p:inputText autocomplete="off" id="txtNewPtName" value="#{cc.attrs.patient.person.name}" class="form-control w-100" style="width: 200px; text-transform: capitalize;" placeholder="Name"></p:inputText>
+            </div>
+            <div class="col-md-4 p-1">
+                <p:selectOneMenu id="txtNewSex" class="form-control w-100">
+                    <f:selectItem itemLabel="Select Sex" />
+                    <f:selectItems value="#{enumController.sex}" />
+                </p:selectOneMenu>
+            </div>
+
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-4 p-1">
+                <p:outputLabel for="year" value="Age Year Part" ></p:outputLabel>
+                <p:inputText autocomplete="off" placeholder="Age Years Part" id="year" value="#{cc.attrs.patient.person.ageYearsComponent}" class="form-control w-100">
+                    <f:ajax event="keyup" execute="@this" render="txtAgeStr calNewPtDob" />
+                </p:inputText>
+            </div>
+            <div class="col-md-4 p-1">
+                <p:outputLabel for="year" value="Age Month Part" ></p:outputLabel>
+                <p:inputText autocomplete="off" id="month" placeholder="Age Month Part" value="#{cc.attrs.patient.person.ageMonthsComponent}" class="form-control w-100">
+                    <f:ajax event="keyup" execute="@this" render="txtAgeStr calNewPtDob"/>
+                </p:inputText>
+            </div>
+            <div class="col-md-4 p-1">
+                <p:outputLabel for="year" value="Age Days Part" ></p:outputLabel>
+                <p:inputText autocomplete="off" id="day" placeholder="Age Days Part" value="#{cc.attrs.patient.person.ageDaysComponent}" class="form-control w-100">
+                    <f:ajax event="keyup" execute="@this" render="txtAgeStr calNewPtDob" />
+                </p:inputText>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4 p-1">
+                <p:outputLabel value="Age" ></p:outputLabel>
+                <p:inputText id="txtAgeStr" value="#{cc.attrs.patient.person.ageAsString}" class="form-control w-100" disabled="true"/>          
+            </div>
+            <div class="col-md-4 p-1">
+                <p:outputLabel value="Date of Birth" ></p:outputLabel>
+                <p:datePicker id="calNewPtDob" 
+                              value="#{cc.attrs.patient.person.dob}"
+                              inputStyleClass="w-100"
+                              class="w-100">
+                    <p:ajax process="@this" update="year month day txtAgeStr" ></p:ajax>
+                </p:datePicker>
+            </div>
+        </div>
+
+        <div class="row mt-2 ">
+            <div class="col-12 p-1">
+                <p:outputLabel value="Address" ></p:outputLabel>
+                <p:inputText  id="atxtNewPtArea" autocomplete="off" class="form-control w-100" value="#{cc.attrs.patient.person.address}"  placeholder="Address" />
+            </div>
+        </div>
+
+        <div class="row mt-2 ">
+            <div class="col-md-6 p-1">
+                <p:outputLabel value="Mobile No" ></p:outputLabel>
+                <p:inputText id="txtNewPtPhone" class="form-control w-100" autocomplete="off" maxlength="11" value="#{cc.attrs.patient.person.phone}" placeholder="Mobile"/>
+            </div>
+            <div class="col-md-6 p-1">
+                <p:outputLabel value="NIC" ></p:outputLabel>
+                <p:inputText id="txtNewPtNic" class="form-control w-100" autocomplete="off" maxlength="11" value="#{cc.attrs.patient.person.nic}" placeholder="NIC"/>
+            </div>
+        </div>
+
+    </cc:implementation>
+
+</html>

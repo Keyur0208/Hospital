@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/reportLab/report_lab.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                >
+
+
+    <ui:define name="subcontent">
+        <h:outputStylesheet library="css" name="printing.css"></h:outputStylesheet>
+        <h:panelGroup rendered="true" >
+            <h:form>
+
+                <p:panel id="panelPrint" styleClass="noBorder summeryBorder" header="Investigation Month End Summary">
+                    <f:facet name="header" >
+                        <p:outputLabel value="2) Lab Investigation Without Credit"/>
+
+                        <h:panelGrid columns="2" styleClass="noPrintButton">
+                            <h:outputLabel value="From Date"/>
+                            <p:calendar id="frmDate" value="#{investigationMonthSummeryOwnController.fromDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                            </p:calendar>
+
+                            <h:outputLabel value="To Date"/>
+                            <p:calendar id="toDate" value="#{investigationMonthSummeryOwnController.toDate}" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                            </p:calendar>
+                        </h:panelGrid>
+                        <h:panelGrid columns="5">
+                            <p:spacer width="65" height="1"/>
+                            <p:commandButton ajax="false"  value="Refresh"  styleClass="noPrintButton"  />
+                            <p:commandButton ajax="false" value="Print" styleClass="noPrintButton">
+                                <p:printer target="panelPrint" />
+                            </p:commandButton>
+
+                            <p:commandButton value="Excel" ajax="false" styleClass="noPrintButton" style="float: right;" >
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Month End Summary Without Credit From #{investigationMonthSummeryOwnController.fromDate} To #{investigationMonthSummeryOwnController.toDate}"
+                                               
+                                                    
+                                               />
+                            </p:commandButton>     
+                        </h:panelGrid>
+                    </f:facet>
+                    <br/><br/>
+                    <p:dataTable id="tbl" value="#{investigationMonthSummeryOwnController.itemsWithoutC}" var="c" >
+
+                        <f:facet name="header">
+                            <h:outputLabel value="Month End Summary Without Credit "/> 
+                            <h:outputLabel value="FROM : " style="white-space:  pre-line"/>
+                            <h:outputLabel value="#{investigationMonthSummeryOwnController.fromDate}">
+                                <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                            </h:outputLabel>
+                            <h:outputLabel value=" &emsp;To "/>
+                            <h:outputLabel value="#{investigationMonthSummeryOwnController.toDate}">
+                                <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />  
+                            </h:outputLabel>                                
+                        </f:facet>                                                 
+
+                        <p:column headerText="Test Name" >
+                            <h:outputLabel value="#{c.investigation.name}"/>
+                        </p:column>
+                        <p:column headerText="Count" style="text-align: right;">
+
+                            <h:outputLabel value="#{c.count}"/>
+                        </p:column>
+                        <p:column headerText="Total" style="text-align: right;" >
+                            <h:outputLabel value="#{c.total}"><f:convertNumber pattern="#,##0.00" /></h:outputLabel>
+                        </p:column>
+                <f:facet name="footer" >
+                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                </f:facet>
+
+                    </p:dataTable>
+
+
+
+
+                </p:panel>        
+            </h:form>
+        </h:panelGroup>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:body>
+
+        <ui:composition template="/admin/users/user_list.xhtml">
+
+            <ui:define name="users"> 
+                <f:view>
+                    <p:panel >
+                        <f:facet name="header" >
+                            <i class="fa fa-tachometer-alt"></i>
+                            <h:outputLabel class="mx-2" value="Manage Dashboards"/>
+                        </f:facet>
+
+                        <h:panelGrid columns="3" >
+                            <p:outputLabel value="User Name" ></p:outputLabel>
+                            <p:outputLabel value=":" style="width: 50px; text-align: center" ></p:outputLabel>
+                            <p:outputLabel class="form-control" value="#{webUserController.current.webUserPerson.name}" style="width: 500px;" ></p:outputLabel>
+
+                            <p:outputLabel value="Dashboard" ></p:outputLabel>
+                            <p:outputLabel value=":" style="width: 50px; text-align: center" ></p:outputLabel>
+                            <p:selectOneMenu value="#{webUserController.dashboard}" style="width: 500px;" >
+                                <f:selectItem itemLabel="Select" ></f:selectItem>
+                                <f:selectItems value="#{enumController.dashboardTypes}" ></f:selectItems>
+                            </p:selectOneMenu>
+
+                            <p:commandButton 
+                                ajax="false" 
+                                action="#{webUserController.addWebUserDashboard()}" 
+                                value="Add" 
+                                icon="fa fa-plus"
+                                class="ui-button-warning mt-2 mb-2">
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:dataTable value="#{webUserController.webUserDashboards}" var="d" rowIndexVar="index">
+                            <p:column headerText="Index" width="50px">
+                                <p:outputLabel value="#{index + 1}" ></p:outputLabel>
+
+                            </p:column>
+                            <p:column headerText="Section" >
+                                <p:outputLabel value="#{d.dashboard}" ></p:outputLabel>
+
+                            </p:column>
+                            <p:column headerText="Action">
+                                <p:commandButton 
+                                    id="remove"
+                                    ajax="false" 
+                                    action="#{webUserController.removeWebUserDashboard()}" 
+                                    icon="fa fa-trash"
+                                    class="ui-button-danger" >
+                                    <f:setPropertyActionListener 
+                                        value="#{d}" 
+                                        target="#{webUserController.webUserDashboard}" >
+                                    </f:setPropertyActionListener>
+                                </p:commandButton>
+                                
+                                <p:tooltip for="remove" value="Remove"  showDelay="0" hideDelay="0"></p:tooltip>
+                            </p:column>
+
+                        </p:dataTable>
+
+
+                    </p:panel>
+                </f:view>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

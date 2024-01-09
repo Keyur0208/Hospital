@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/resources/template/template.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:au="http://java.sun.com/jsf/composite/autocomplete"
+                >
+
+    <ui:define name="content">
+        <h:form>
+            <p:panel header="Leave Application Form">
+                <h:panelGrid columns="2" >
+                    <p:panel header="Search Leave Forms" >
+                        <p:panel>
+                            <p:panelGrid columns="2" >
+                                <h:outputLabel value="From Date"/>
+                                <p:calendar value="#{fingerPrintRecordController.fromDate}"
+                                            pattern="#{sessionController.applicationPreference.shortDateFormat}">     
+                                </p:calendar>   
+                                <h:outputLabel value="To Date"/>
+                                <p:calendar value="#{fingerPrintRecordController.toDate}"
+                                            pattern="#{sessionController.applicationPreference.shortDateFormat}">
+                                </p:calendar> 
+                                <h:outputLabel value="Staff : "/>
+                                <au:completeStaff value="#{fingerPrintRecordController.staff}"/>                               
+
+                                <h:outputLabel value="Institution : "/>
+                                <au:institution value="#{fingerPrintRecordController.institution}"/> 
+
+                                <h:outputLabel value="Department : "/>
+                                <au:department value="#{fingerPrintRecordController.department}"/>
+
+
+                            </p:panelGrid>
+                            <p:commandButton value="Search Created Date" ajax="false" action="#{fingerPrintRecordController.createFingerPrintRecordTableCreatedAt()}" />
+                            <p:commandButton value="Search Sift Date" ajax="false" action="#{fingerPrintRecordController.createFingerPrintRecordTableSiftDate()}" />
+                            <p:commandButton value="Print" ajax="false" action="#" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+                            <p:commandButton ajax="false" value="Excel" styleClass="noPrintButton"  >
+                                <p:dataExporter type="xlsx" target="tb1" fileName="hr_staff_finger_edit_search"  />
+                            </p:commandButton>
+                        </p:panel>
+                        <p:panel id="gpBillPreview" styleClass="noBorder summeryBorder" >
+                            <p:dataTable value="#{fingerPrintRecordController.fingerPrintRecords}" var="l" 
+                                         rowStyleClass="#{l.retired eq true ? 'redText':''}"
+                                         scrollable="true"
+                                         scrollHeight="300" id="tb1">
+                                <f:facet name="header">
+                                    
+                                    <h:outputLabel value="Staff Shift"/><br/>
+                                    <h:outputLabel value="  From : "  />
+                                    <h:outputLabel  value="#{fingerPrintRecordController.fromDate}" >
+                                        <f:convertDateTime pattern="dd MM yy "/>
+                                    </h:outputLabel>
+                                    <h:outputLabel/>
+                                    <h:outputLabel/>
+                                    <h:outputLabel value="  To : "/> 
+                                    <h:outputLabel  value="#{fingerPrintRecordController.toDate}">
+                                        <f:convertDateTime pattern="dd MM yy "/>
+                                    </h:outputLabel><br/>
+                                    <h:panelGroup rendered="#{fingerPrintRecordController.institution ne null}" >
+                                        <h:outputLabel value="#{fingerPrintRecordController.institution.name}" />
+                                        <br/>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{fingerPrintRecordController.department ne null}" >
+                                        <h:outputLabel value="Department : #{fingerPrintRecordController.department.name}"/>
+                                        <br/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <p:column headerText="View" >                                    
+                                    <p:commandButton ajax="false" value="View" action="hr_staff_finger_edit" actionListener="#{fingerPrintRecordController.viewStaffFinger(l)}" disabled="#{l.retired}"></p:commandButton>
+                                </p:column>
+
+                                <p:column headerText="Staff">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Staff"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{l.staff.person.nameWithTitle}" ></p:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Date">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Date"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{l.staffShift.shiftDate}" >
+                                        <f:convertDateTime pattern="yyyy MM dd" />
+                                    </p:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Created At">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Created At"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{l.createdAt}" >
+                                        <f:convertDateTime pattern="yyyy MM dd" />
+                                    </p:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Creater">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Creater"/>
+                                    </f:facet>
+                                    <p:outputLabel value="#{l.creater.webUserPerson.nameWithTitle}" ></p:outputLabel>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:outputLabel value="Print By : #{sessionController.loggedUser.webUserPerson.name} - " />
+                                    <p:outputLabel value="Print At : " />
+                                    <p:outputLabel value="#{commonController.currentDateTime}" >
+                                        <f:convertDateTime pattern="yyyy MMMM dd hh:mm:ss a " />
+                                    </p:outputLabel>
+                                </f:facet>
+                            </p:dataTable>
+                        </p:panel>
+                    </p:panel>
+                </h:panelGrid>              
+            </p:panel>
+        </h:form>
+    </ui:define> 
+
+</ui:composition>

@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/reportLab/report_lab.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                >
+
+
+    <ui:define name="subcontent">
+        <h:form>
+
+            <p:panel id="panelPrint" styleClass="noBorder summeryBorder">
+                <f:facet name="header">
+                    <h:outputLabel value="3) Investigation Counts"/>
+                <h:panelGrid columns="2"  styleClass="noPrintButton" >
+                    <h:outputLabel value="From Date"/>
+                    <p:calendar id="frmDate" value="#{commonReport.fromDate}" navigator="true"  pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                    </p:calendar>
+                    
+
+                    <h:outputLabel value="To Date"/>
+                    <p:calendar id="toDate" value="#{commonReport.toDate}" navigator="true" pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  >
+                    </p:calendar>
+                    <h:outputLabel value="Institution"/>
+                    <p:autoComplete forceSelection="true" 
+                                    value="#{commonReport.institution}" 
+                                    completeMethod="#{institutionController.completeIns}" var="ix" itemLabel="#{ix.name}" 
+                                    itemValue="#{ix}" size="30"  style="width: 400px;">
+                        <p:column>
+                            #{ix.name}
+                        </p:column>
+                        <p:column>
+                            #{ix.institutionCode}
+                        </p:column>
+                    </p:autoComplete>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid columns="5"  >
+                        <p:spacer width="65" height="1"/>
+                        <p:commandButton value="Refresh" ajax="false" action="#{commonReport.displayOutsideBillFees()}"  styleClass="noPrintButton" style="float: right;"   />
+                    <p:commandButton ajax="false" value="Print"  styleClass="noPrintButton" style="float: right;" >
+                        <p:printer target="panelPrint" />
+                    </p:commandButton>
+                    <p:commandButton 
+                      ajax="false"  value="Excel"  styleClass="noPrintButton" style="float: right;" >
+                        <p:dataExporter type="xlsx" target="tbl" fileName="Report By Outside Institution"/>  
+                    </p:commandButton>
+                    
+                </h:panelGrid>
+                </f:facet>
+
+                <p:dataTable id="tbl" value="#{commonReport.billFees}" 
+                             var="d" style="font-size: 15px;">
+                    <f:facet name="header">
+                        <h:outputLabel value="#{commonReport.institution.name}"/>
+                        <h:outputLabel value="Fees For Outside Institution" style="white-space: pre-line"/>
+                        <h:outputLabel value=" From : " style="white-space: pre-line"/>
+                        <h:outputLabel  value="#{commonReport.fromDate}">
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                        </h:outputLabel>
+                        <h:outputLabel value="&emsp;&emsp;To :"/>
+                        <h:outputLabel  value="#{commonReport.toDate}" >
+                            <f:convertDateTime pattern="#{sessionController.applicationPreference.longDateTimeFormat}" />
+                        </h:outputLabel>
+                    </f:facet>
+
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputLabel value="Bill No"/>
+                        </f:facet>
+                        <h:outputLabel value="#{d.bill.insId}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputLabel value="Investigation"/>
+                        </f:facet>
+                        <h:outputLabel value="#{d.billItem.item.name}"/>
+                    </p:column>
+
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputLabel value="Outside Value"/>
+                        </f:facet>
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{commonReport.totalFee}">
+                                <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                            </h:outputLabel>
+                        </f:facet>
+                        <h:outputLabel value="#{d.feeValue}">
+                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                        </h:outputLabel>
+                    </p:column>
+                    
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputLabel value="Total Fee"/>
+                        </f:facet>
+                        <f:facet name="footer">
+                            <h:outputLabel value="#{commonReport.billTotal}">
+                                <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                            </h:outputLabel>
+                        </f:facet>
+                        <h:outputLabel value="#{d.billItem.netValue}">
+                            <f:convertNumber pattern="#,##0.00" ></f:convertNumber>
+                        </h:outputLabel>
+                    </p:column>
+                <f:facet name="footer" >
+                    <h:outputLabel value="Printed By : #{sessionController.loggedUser.webUserPerson.name}" style="float: right"/>
+                </f:facet>
+                </p:dataTable>
+            </p:panel>   
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

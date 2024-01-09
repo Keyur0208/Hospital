@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+
+        <ui:composition template="/pharmacy/pharmacy_reports_index.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+
+                    <p:panel header="After Stock Taking Report" >
+
+                        <h:panelGrid columns="4" class="w-100" >
+                            <h:outputLabel value="Department" ></h:outputLabel>
+                            <p:autoComplete completeMethod="#{departmentController.completeDept}" 
+                                            var="dept" itemLabel="#{dept.name}" itemValue="#{dept}" 
+                                            forceSelection="true" value="#{reportsStock.department}" />
+                            
+                            <h:outputLabel value="Category" ></h:outputLabel>
+                            <p:autoComplete completeMethod="#{pharmaceuticalItemCategoryController.completeCategory}" var="dept" 
+                                            itemLabel="#{dept.name}" itemValue="#{dept}" forceSelection="true" value="#{reportsStock.category}" >
+                            </p:autoComplete>
+                            </h:panelGrid>
+                        <h:panelGrid class="my-2" columns="3">
+                            <p:commandButton 
+                                ajax="false" 
+                                value="Process" 
+                                icon="fas fa-arrows-rotate"
+                                class="ui-button-warning"
+                                actionListener="#{reportsStock.fillCategoryStocks()}" >
+                            </p:commandButton>
+                            <p:commandButton 
+                                ajax="false" 
+                                value="Excel" 
+                                icon="fas fa-file-excel"
+                                class="ui-button-success mx-2">
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Category_report"  />
+                            </p:commandButton> 
+                            <p:commandButton 
+                                value="Print" 
+                                icon="fas fa-print"
+                                class="ui-button-info"
+                                ajax="false" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+                             
+                        </h:panelGrid>
+
+                        <h:panelGroup id="gpBillPreview" styleClass="noBorder summeryBorder">
+                            <p:dataTable id="tbl" rowStyleClass="#{i.stock eq 0 ?'noDisplayRow' : ''}" 
+                                        value="#{reportsStock.stocks}" var="i"  
+                                        
+                                        >
+                                <f:facet name="header">
+                                    <h:outputLabel value="Stock in #{reportsStock.department.name} "/>   <br/>                                 
+                                    <h:outputLabel value="for #{reportsStock.category.name}"/> <br/><br/>
+                                    <h:outputLabel value="Date : "><p:clock pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  /></h:outputLabel>                                   
+                                </f:facet> 
+                                
+                                <p:column headerText="Item"
+                                          sortBy="#{i.itemBatch.item.name}"
+                                          filterBy="#{i.itemBatch.item.name}"
+                                          filterMatchMode="contains"
+                                          
+                                          >
+                                    
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Item"/>    
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.itemBatch.item.name}" ></h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="Code" style="text-align: center;"
+                                          sortBy="#{i.itemBatch.item.code}"
+                                          filterBy="#{i.itemBatch.item.code}"
+                                          filterMatchMode="contains"
+                                          >
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Code"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.itemBatch.item.code}" style="width: 100px!important;" ></h:outputLabel>
+                                </p:column>
+                                
+                                <p:column headerText="Before Stock Quentity" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Before Stock Quantity"/>    
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.stock}"  >
+                                        <f:convertNumber pattern="#,###" ></f:convertNumber>
+                                    </h:outputLabel>                                  
+                                </p:column>
+                                
+                                <p:column headerText="After Stock Quentity" styleClass="averageNumericColumn">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="After Stock Quantity"/>    
+                                    </f:facet>
+                                    <h:outputLabel value="#{i.stock}"  >
+                                        <f:convertNumber pattern="#,###" ></f:convertNumber>
+                                    </h:outputLabel>                                  
+                                </p:column>
+
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:panel>
+                </h:form>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

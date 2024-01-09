@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:body>
+
+        <ui:composition template="/pharmacy/pharmacy_reports_index.xhtml">
+
+            <ui:define name="subcontent">
+                <h:form>
+
+                    <p:panel header="Item - wise Purchase/Good Receive" >
+                        
+                        <div class="row">
+                            <div class="col-4">
+                                <h:outputLabel value="Department" />&nbsp;
+                            <p:autoComplete 
+                                completeMethod="#{departmentController.completeDept}" 
+                                var="dept" 
+                                itemLabel="#{dept.name}" 
+                                itemValue="#{dept}" 
+                                forceSelection="true" 
+                                value="#{pharmacyPurchaseController.department}" 
+                                 >
+                            </p:autoComplete>
+                            </div>
+                            <div class="col-4">
+                                <h:outputLabel value="From" />&nbsp;
+                            <p:calendar value="#{pharmacyPurchaseController.fromDate}" 
+                                        pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                            </div>
+                            <div class="col-4">
+                                <h:outputLabel value="To" />&nbsp;
+                            <p:calendar value="#{pharmacyPurchaseController.toDate}" 
+                                        pattern="#{sessionController.applicationPreference.longDateTimeFormat}"  ></p:calendar>
+                            </div>
+                        </div>
+
+                        
+
+                        <h:panelGrid columns="3" class="my-2">
+                            <p:commandButton 
+                                ajax="false" 
+                                value="Process" 
+                                icon="fas fa-arrows-rotate"
+                                class="ui-button-warning"
+                                action="#{pharmacyPurchaseController.fillItemVicePurchaseAndGoodReceive()}" >
+                            </p:commandButton>
+                            <p:commandButton 
+                                ajax="false" 
+                                value="Excel" 
+                                icon="fas fa-file-excel"
+                                class="ui-button-success mx-2">
+                                <p:dataExporter type="xlsx" target="tbl" fileName="Unit_Issue_Report_by_department"  />
+                            </p:commandButton>
+                            <p:commandButton 
+                                value="Print" 
+                                ajax="false" 
+                                icon="fas fa-print"
+                                class="ui-button-info"
+                                action="#" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+
+                            
+
+                        </h:panelGrid>
+
+
+                        <h:panelGroup id="gpBillPreview">
+                            <p:dataTable id="tbl" styleClass="noBorder normalFont"
+                                         stickyHeader="false"
+                                         value="#{pharmacyPurchaseController.rows}" 
+                                         var="i"  
+                                         rowKey="#{i.name}"
+                                         rows="10"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="20,50,100"
+                                         >
+
+                                <p:column headerText="Item"
+                                          sortBy="#{i.name}" 
+                                          filterBy="#{i.name}"
+                                          filterMatchMode="contains">
+                                    <h:outputLabel value="#{i.name}"></h:outputLabel>                                    
+                                </p:column>
+
+                                <p:column headerText="Quantity" 
+                                          style="text-align: right;"
+                                          sortBy="#{i.qty}" 
+                                          filterBy="#{i.qty}" 
+                                          filterMatchMode="contains">
+                                    <h:outputLabel value="#{i.qty}" >
+                                    </h:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Free" sortBy="#{i.freeQty}" filterBy="#{i.freeQty}" style="text-align: right;">
+                                    <h:outputLabel value="#{i.freeQty}" >
+                                    </h:outputLabel>
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGroup>
+                    </p:panel>
+                </h:form>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

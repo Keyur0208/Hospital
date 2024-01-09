@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:bi="http://java.sun.com/jsf/composite/bill"
+      >
+
+    <h:body>
+
+        <ui:composition template="/inward/inward_reports.xhtml">
+            <ui:define name="subcontent">
+                <h:form>
+                    <p:panel header="Doctor Payment" >
+                        <h:panelGrid columns="2" class="my-4">
+                            <p:commandButton class="ui-button-warning" icon="fas fa-list" ajax="false" value="List" action="#{doctorController.listDoctors()}">
+                            </p:commandButton>
+
+                            <p:commandButton class="mx-1 ui-button-info" icon="fas fa-print" value="Print" ajax="false" action="#" >
+                                <p:printer target="gpBillPreview" ></p:printer>
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:panel id="gpBillPreview">
+                            <p:panelGrid columns="3" style="width: 100%;">
+                                <p:dataTable id="tbl" value="#{doctorController.items}" var="dc" rowIndexVar="i">
+                                    <p:column headerText="No" styleClass="alignTop">
+                                        <h:outputLabel value="#{i+1}"/>
+                                    </p:column>
+                                    <p:column headerText="Doctor Speciality" filterBy="#{dc.speciality.name}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            <p:outputLabel value="Doctor Speciality" />
+                                        </f:facet>
+                                        <p:outputLabel value="#{dc.speciality.name}" >
+                                        </p:outputLabel>
+                                    </p:column>
+                                    <p:column headerText="Doctor Name" filterBy="#{dc.person.name}" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            <p:outputLabel value="Doctor Name" />
+                                        </f:facet>
+                                        <p:outputLabel value="#{dc.person.name}" >
+                                        </p:outputLabel>
+                                    </p:column>
+
+
+                                </p:dataTable>
+                            </p:panelGrid>
+                        </p:panel>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>

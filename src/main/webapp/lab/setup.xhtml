@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:body>
+
+        <ui:composition template="/lab/administration.xhtml">
+
+            <ui:define name="subcontent">
+
+                <h:form>
+
+                    <h:panelGrid columns="3" columnClasses="grid1 grid1"  >
+
+
+
+                        <p:panel header="Please do NOT click. Only for Developers."  >
+
+                            <h:panelGrid columns="1"  >
+                                <p:commandButton  ajax="false" value="Add Many Investigations" action="#{investigationController.toAddManyIx()}"/>
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Update to New Report Format" action="#{investigationItemController.convertCssValuesToRiValues()}"  />
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Change Ix Institution According To Dept" action="#{investigationController.changeIxInstitutionAccordingToDept}"  />
+                                
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Find Master Items" action="#{investigationController.changeIxReportedAsToMasterItem}"  />
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Ix Cats to Cats Categories" action="#{investigationController.catToIxCat}"  />
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Add Worksheet Items" action="#{investigationController.reportItemsToWorksheetItems}"  />
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="Copy Ix" action="/lab/copy"  />
+                                <p:commandButton  styleClass="linkButton" ajax="false" value="To Delete Many Investigation Items" action="/lab/investigation_values_to_delete"  />
+                            </h:panelGrid>
+                        </p:panel>
+
+                    </h:panelGrid>
+
+
+
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+    </h:body>
+</html>
